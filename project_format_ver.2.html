@@ -1,0 +1,1339 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="project_format_ver.2_files/libs/clipboard/clipboard.min.js"></script>
+<script src="project_format_ver.2_files/libs/quarto-html/tabby.min.js"></script>
+<script src="project_format_ver.2_files/libs/quarto-html/popper.min.js"></script>
+<script src="project_format_ver.2_files/libs/quarto-html/tippy.umd.min.js"></script>
+<link href="project_format_ver.2_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="project_format_ver.2_files/libs/quarto-html/light-border.css" rel="stylesheet">
+<link href="project_format_ver.2_files/libs/quarto-html/quarto-syntax-highlighting-37eea08aefeeee20ff55810ff984fec1.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+  <meta name="generator" content="quarto-1.7.32">
+
+  <title>2013년 항공사 투자 모델 분석</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="project_format_ver.2_files/libs/revealjs/dist/reset.css">
+  <link rel="stylesheet" href="project_format_ver.2_files/libs/revealjs/dist/reveal.css">
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+      vertical-align: middle;
+    }
+  </style>
+  <link rel="stylesheet" href="project_format_ver.2_files/libs/revealjs/dist/theme/quarto-f563837468303362081e247dddd440d0.css">
+  <link href="project_format_ver.2_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
+  <link href="project_format_ver.2_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
+  <link href="project_format_ver.2_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
+  <link href="project_format_ver.2_files/libs/revealjs/plugin/quarto-support/footer.css" rel="stylesheet">
+  <style type="text/css">
+    .reveal div.sourceCode {
+      margin: 0;
+      overflow: auto;
+    }
+    .reveal div.hanging-indent {
+      margin-left: 1em;
+      text-indent: -1em;
+    }
+    .reveal .slide:not(.center) {
+      height: 100%;
+    }
+    .reveal .slide.scrollable {
+      overflow-y: auto;
+    }
+    .reveal .footnotes {
+      height: 100%;
+      overflow-y: auto;
+    }
+    .reveal .slide .absolute {
+      position: absolute;
+      display: block;
+    }
+    .reveal .footnotes ol {
+      counter-reset: ol;
+      list-style-type: none; 
+      margin-left: 0;
+    }
+    .reveal .footnotes ol li:before {
+      counter-increment: ol;
+      content: counter(ol) ". "; 
+    }
+    .reveal .footnotes ol li > p:first-child {
+      display: inline-block;
+    }
+    .reveal .slide ul,
+    .reveal .slide ol {
+      margin-bottom: 0.5em;
+    }
+    .reveal .slide ul li,
+    .reveal .slide ol li {
+      margin-top: 0.4em;
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide ul[role="tablist"] li {
+      margin-bottom: 0;
+    }
+    .reveal .slide ul li > *:first-child,
+    .reveal .slide ol li > *:first-child {
+      margin-block-start: 0;
+    }
+    .reveal .slide ul li > *:last-child,
+    .reveal .slide ol li > *:last-child {
+      margin-block-end: 0;
+    }
+    .reveal .slide .columns:nth-child(3) {
+      margin-block-start: 0.8em;
+    }
+    .reveal blockquote {
+      box-shadow: none;
+    }
+    .reveal .tippy-content>* {
+      margin-top: 0.2em;
+      margin-bottom: 0.7em;
+    }
+    .reveal .tippy-content>*:last-child {
+      margin-bottom: 0.2em;
+    }
+    .reveal .slide > img.stretch.quarto-figure-center,
+    .reveal .slide > img.r-stretch.quarto-figure-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-left,
+    .reveal .slide > img.r-stretch.quarto-figure-left  {
+      display: block;
+      margin-left: 0;
+      margin-right: auto; 
+    }
+    .reveal .slide > img.stretch.quarto-figure-right,
+    .reveal .slide > img.r-stretch.quarto-figure-right  {
+      display: block;
+      margin-left: auto;
+      margin-right: 0; 
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+  
+  <script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+</head>
+<body class="quarto-light">
+  <div class="reveal">
+    <div class="slides">
+
+<section id="title-slide" class="quarto-title-block center">
+  <h1 class="title">2013년 항공사 투자 모델 분석</h1>
+
+<div class="quarto-title-authors">
+</div>
+
+</section>
+<section id="목차" class="slide level2">
+<h2>목차</h2>
+<ol type="1">
+<li>주제</li>
+<li>분석내용</li>
+<li>활용 데이터</li>
+<li>타당성 검증(15년 지표비교)</li>
+</ol>
+</section>
+<section id="주제" class="slide level2">
+<h2>1. 주제</h2>
+<ul>
+<li>2013년 기준, 뉴욕 공항 이용 데이터를 활용하여 기업 가치 / 성장가능성을 분석</li>
+<li>2년후(2015년)의 시가총액과 비교하여 데이터 분석의 정확성과 타당성 검증</li>
+</ul>
+</section>
+<section id="분석내용" class="slide level2">
+<h2>2. 분석내용</h2>
+<ul>
+<li>총 9개사에 한해서만 분석 진행</li>
+<li>고객선호도 (출발지연률, 도착지연률, 결항률)</li>
+<li>노후화항공기 운행률</li>
+<li>항공사의 운영효율성 측정을 위한 항공기 활용률</li>
+</ul>
+<p>총 4가지 기준을 바탕으로 기업 가치/성장가능성 분석</p>
+</section>
+<section id="활용-데이터" class="slide level2">
+<h2>3. 활용 데이터</h2>
+</section>
+<section id="분석1-고객선호도" class="slide level2">
+<h2>분석1: 고객선호도</h2>
+<ul>
+<li>출발지연률, 도착지연률, 결항률 세가지를 고객선호도 수치로 활용</li>
+</ul>
+</section>
+<section id="출발지연률" class="slide level2">
+<h2>(1) 출발지연률</h2>
+<ul>
+<li>지연률 = 지연된 항공편 수/전체 항공편 수) * 100</li>
+</ul>
+<div id="9b6e40b7" class="cell" data-execution_count="2">
+<div class="cell-output cell-output-display" data-execution_count="2">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+
+<table class="dataframe caption-top" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header" style="text-align: right;">
+<th data-quarto-table-cell-role="th">classify_delay</th>
+<th data-quarto-table-cell-role="th">origin</th>
+<th data-quarto-table-cell-role="th">carrier</th>
+<th data-quarto-table-cell-role="th">10분 이상 일찍 출발</th>
+<th data-quarto-table-cell-role="th">10분~1시간 출발지연</th>
+<th data-quarto-table-cell-role="th">1시간 이상 출발지연</th>
+<th data-quarto-table-cell-role="th">정시 또는 ±10분</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>EWR</td>
+<td>AA</td>
+<td>5.86</td>
+<td>12.99</td>
+<td>7.20</td>
+<td>73.95</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>EWR</td>
+<td>AS</td>
+<td>12.13</td>
+<td>11.71</td>
+<td>5.50</td>
+<td>70.66</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>EWR</td>
+<td>B6</td>
+<td>11.62</td>
+<td>15.81</td>
+<td>9.36</td>
+<td>63.21</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>EWR</td>
+<td>DL</td>
+<td>1.89</td>
+<td>13.48</td>
+<td>7.50</td>
+<td>77.14</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>EWR</td>
+<td>OO</td>
+<td>0.00</td>
+<td>16.67</td>
+<td>16.67</td>
+<td>66.67</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>EWR</td>
+<td>UA</td>
+<td>0.86</td>
+<td>21.49</td>
+<td>6.62</td>
+<td>71.02</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>EWR</td>
+<td>US</td>
+<td>3.68</td>
+<td>9.85</td>
+<td>4.07</td>
+<td>82.41</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>EWR</td>
+<td>WN</td>
+<td>0.18</td>
+<td>24.39</td>
+<td>9.36</td>
+<td>66.07</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>JFK</td>
+<td>AA</td>
+<td>1.26</td>
+<td>13.91</td>
+<td>6.93</td>
+<td>77.89</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">9</td>
+<td>JFK</td>
+<td>B6</td>
+<td>2.21</td>
+<td>19.73</td>
+<td>8.20</td>
+<td>69.86</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">10</td>
+<td>JFK</td>
+<td>DL</td>
+<td>0.88</td>
+<td>15.59</td>
+<td>4.84</td>
+<td>78.69</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">11</td>
+<td>JFK</td>
+<td>HA</td>
+<td>9.06</td>
+<td>5.26</td>
+<td>3.22</td>
+<td>82.46</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">12</td>
+<td>JFK</td>
+<td>UA</td>
+<td>3.19</td>
+<td>13.00</td>
+<td>5.72</td>
+<td>78.09</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">13</td>
+<td>JFK</td>
+<td>US</td>
+<td>2.67</td>
+<td>12.35</td>
+<td>4.01</td>
+<td>80.97</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">14</td>
+<td>LGA</td>
+<td>AA</td>
+<td>6.38</td>
+<td>12.20</td>
+<td>5.59</td>
+<td>75.83</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">15</td>
+<td>LGA</td>
+<td>B6</td>
+<td>13.89</td>
+<td>17.53</td>
+<td>10.29</td>
+<td>58.30</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">16</td>
+<td>LGA</td>
+<td>DL</td>
+<td>2.55</td>
+<td>14.16</td>
+<td>6.00</td>
+<td>77.30</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">17</td>
+<td>LGA</td>
+<td>OO</td>
+<td>26.09</td>
+<td>8.70</td>
+<td>13.04</td>
+<td>52.17</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">18</td>
+<td>LGA</td>
+<td>UA</td>
+<td>4.88</td>
+<td>15.22</td>
+<td>7.50</td>
+<td>72.40</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">19</td>
+<td>LGA</td>
+<td>US</td>
+<td>6.19</td>
+<td>11.54</td>
+<td>3.80</td>
+<td>78.47</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">20</td>
+<td>LGA</td>
+<td>WN</td>
+<td>0.32</td>
+<td>24.52</td>
+<td>8.52</td>
+<td>66.65</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="공항별-정시출발률" class="slide level2">
+<h2>공항별 정시출발률</h2>
+<ul>
+<li>공항별 차이가 크지 않음.</li>
+<li>공항별 지연률에 대한 영향이 크지 않음을 알 수 있음.</li>
+</ul>
+
+<img data-src="project_format_ver.2_files/figure-revealjs/cell-4-output-1.png" class="r-stretch"></section>
+<section id="항공사별-출발지연률" class="slide level2">
+<h2>항공사별 출발지연률</h2>
+
+<img data-src="project_format_ver.2_files/figure-revealjs/cell-5-output-1.png" class="r-stretch"></section>
+<section id="도착지연률" class="slide level2">
+<h2>(2) 도착지연률</h2>
+<div id="b69c9496" class="cell" data-execution_count="5">
+<div class="cell-output cell-output-display" data-execution_count="5">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+
+<table class="dataframe caption-top" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header" style="text-align: right;">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">classify_delay</th>
+<th data-quarto-table-cell-role="th">10분~1시간 지연</th>
+<th data-quarto-table-cell-role="th">1시간 이상 지연</th>
+<th data-quarto-table-cell-role="th">빠른 도착 및 정시 도착(10분 이내)</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">origin</th>
+<th data-quarto-table-cell-role="th">carrier</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td rowspan="8" data-quarto-table-cell-role="th" data-valign="top">EWR</td>
+<td data-quarto-table-cell-role="th">AA</td>
+<td>15.79</td>
+<td>7.17</td>
+<td>77.04</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">AS</td>
+<td>14.39</td>
+<td>4.65</td>
+<td>80.96</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">B6</td>
+<td>19.10</td>
+<td>9.84</td>
+<td>71.06</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">DL</td>
+<td>18.37</td>
+<td>7.80</td>
+<td>73.83</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">OO</td>
+<td>16.67</td>
+<td>16.67</td>
+<td>66.67</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">UA</td>
+<td>20.49</td>
+<td>6.75</td>
+<td>72.77</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">US</td>
+<td>18.35</td>
+<td>4.37</td>
+<td>77.28</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">WN</td>
+<td>22.11</td>
+<td>9.49</td>
+<td>68.39</td>
+</tr>
+<tr class="odd">
+<td rowspan="6" data-quarto-table-cell-role="th" data-valign="top">JFK</td>
+<td data-quarto-table-cell-role="th">AA</td>
+<td>17.81</td>
+<td>7.34</td>
+<td>74.85</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">B6</td>
+<td>22.48</td>
+<td>9.02</td>
+<td>68.49</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">DL</td>
+<td>15.51</td>
+<td>5.50</td>
+<td>78.99</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">HA</td>
+<td>16.67</td>
+<td>2.34</td>
+<td>80.99</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">UA</td>
+<td>19.23</td>
+<td>7.21</td>
+<td>73.56</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">US</td>
+<td>19.77</td>
+<td>4.89</td>
+<td>75.34</td>
+</tr>
+<tr class="odd">
+<td rowspan="7" data-quarto-table-cell-role="th" data-valign="top">LGA</td>
+<td data-quarto-table-cell-role="th">AA</td>
+<td>15.97</td>
+<td>5.85</td>
+<td>78.18</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">B6</td>
+<td>24.24</td>
+<td>11.30</td>
+<td>64.46</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">DL</td>
+<td>18.03</td>
+<td>6.63</td>
+<td>75.35</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">OO</td>
+<td>8.70</td>
+<td>13.04</td>
+<td>78.26</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">UA</td>
+<td>18.56</td>
+<td>7.87</td>
+<td>73.57</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">US</td>
+<td>18.45</td>
+<td>5.03</td>
+<td>76.52</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">WN</td>
+<td>21.29</td>
+<td>8.57</td>
+<td>70.14</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="공항별-정시도착률" class="slide level2">
+<h2>공항별 정시도착률</h2>
+<ul>
+<li>공항별 차이가 크지 않음.</li>
+<li>공항별 지연률에 대한 영향이 크지 않음을 알 수 있음.</li>
+</ul>
+
+<img data-src="project_format_ver.2_files/figure-revealjs/cell-7-output-1.png" class="r-stretch"></section>
+<section id="항공사별-도착지연률" class="slide level2">
+<h2>항공사별 도착지연률</h2>
+
+<img data-src="project_format_ver.2_files/figure-revealjs/cell-8-output-1.png" class="r-stretch"></section>
+<section id="결항률" class="slide level2">
+<h2>(3) 결항률</h2>
+<div id="835cc8a6" class="cell" data-execution_count="8">
+<div class="cell-output cell-output-display" data-execution_count="8">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+
+<table class="dataframe caption-top" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header" style="text-align: right;">
+<th data-quarto-table-cell-role="th">carrier</th>
+<th data-quarto-table-cell-role="th">AA</th>
+<th data-quarto-table-cell-role="th">AS</th>
+<th data-quarto-table-cell-role="th">B6</th>
+<th data-quarto-table-cell-role="th">DL</th>
+<th data-quarto-table-cell-role="th">HA</th>
+<th data-quarto-table-cell-role="th">OO</th>
+<th data-quarto-table-cell-role="th">UA</th>
+<th data-quarto-table-cell-role="th">US</th>
+<th data-quarto-table-cell-role="th">WN</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">origin</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">EWR</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>NaN</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">JFK</td>
+<td>0.0</td>
+<td>NaN</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>NaN</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>NaN</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">LGA</td>
+<td>0.0</td>
+<td>NaN</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>NaN</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="항공사별-평균-결항률" class="slide level2">
+<h2>항공사별 평균 결항률</h2>
+
+<img data-src="project_format_ver.2_files/figure-revealjs/cell-10-output-1.png" class="r-stretch"></section>
+<section id="분석2-투자-risk-노후화-항공기" class="slide level2">
+<h2>분석2: 투자 Risk-노후화 항공기</h2>
+<ul>
+<li>제조년 20년(1993년) 이상된 항공기는 ‘노후화’ 된 것으로 규정</li>
+</ul>
+</section>
+<section id="항공사별-노후화-항공기-운행률" class="slide level2">
+<h2>항공사별 노후화 항공기 운행률</h2>
+<div id="f05931e9" class="cell" data-execution_count="10">
+<div class="cell-output cell-output-display" data-execution_count="10">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+
+<table class="dataframe caption-top" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header" style="text-align: right;">
+<th data-quarto-table-cell-role="th">class</th>
+<th data-quarto-table-cell-role="th">after_1993</th>
+<th data-quarto-table-cell-role="th">before_1993</th>
+<th data-quarto-table-cell-role="th">unknown</th>
+<th data-quarto-table-cell-role="th">after%</th>
+<th data-quarto-table-cell-role="th">before%</th>
+<th data-quarto-table-cell-role="th">unknown%</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">carrier</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">AA</td>
+<td>212</td>
+<td>9767</td>
+<td>22666</td>
+<td>0.65</td>
+<td>29.92</td>
+<td>69.43</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">AS</td>
+<td>710</td>
+<td>0</td>
+<td>4</td>
+<td>99.44</td>
+<td>0.00</td>
+<td>0.56</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">B6</td>
+<td>52956</td>
+<td>0</td>
+<td>1679</td>
+<td>96.93</td>
+<td>0.00</td>
+<td>3.07</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">DL</td>
+<td>29687</td>
+<td>17786</td>
+<td>637</td>
+<td>61.71</td>
+<td>36.97</td>
+<td>1.32</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">HA</td>
+<td>310</td>
+<td>0</td>
+<td>32</td>
+<td>90.64</td>
+<td>0.00</td>
+<td>9.36</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">OO</td>
+<td>32</td>
+<td>0</td>
+<td>0</td>
+<td>100.00</td>
+<td>0.00</td>
+<td>0.00</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">UA</td>
+<td>47546</td>
+<td>8571</td>
+<td>1862</td>
+<td>82.01</td>
+<td>14.78</td>
+<td>3.21</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">US</td>
+<td>18961</td>
+<td>149</td>
+<td>763</td>
+<td>95.41</td>
+<td>0.75</td>
+<td>3.84</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">WN</td>
+<td>11744</td>
+<td>238</td>
+<td>263</td>
+<td>95.91</td>
+<td>1.94</td>
+<td>2.15</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="각-항공사별-노후화-항공기-총-운항-횟수" class="slide level2">
+<h2>각 항공사별 노후화 항공기 총 운항 횟수</h2>
+
+<img data-src="project_format_ver.2_files/figure-revealjs/cell-12-output-1.png" class="r-stretch"></section>
+<section id="각-항공사별-노후화-항공기-점유율" class="slide level2">
+<h2>각 항공사별 노후화 항공기 점유율</h2>
+
+<img data-src="project_format_ver.2_files/figure-revealjs/cell-13-output-1.png" class="r-stretch"></section>
+<section id="분석3-항공사별-항공기-활용률" class="slide level2">
+<h2>분석3: 항공사별 항공기 활용률</h2>
+<ul>
+<li>항공사의 운영효율성 측정을 위해 ’각 항공기별 하루평균 운항시간’을 검토</li>
+<li>항공기 활용률 및 가동률이 높을수록 고정비 대비 운항수익 증가</li>
+<li>동일자산 대비 매출효율(ROA) 증가로, 하루평균 운항시간이 높을 수록 고효율</li>
+</ul>
+</section>
+<section id="각-항공기별-하루평균-운항시간" class="slide level2">
+<h2>각 항공기별 하루평균 운항시간</h2>
+<div id="a4714374" class="cell" data-execution_count="13">
+<div class="cell-output cell-output-display" data-execution_count="13">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+
+<table class="dataframe caption-top" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header" style="text-align: right;">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">carrier</th>
+<th data-quarto-table-cell-role="th">avg_airtime</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>HA</td>
+<td>10.389922</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>AS</td>
+<td>5.413147</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>UA</td>
+<td>3.976652</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>B6</td>
+<td>3.941019</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>AA</td>
+<td>3.473681</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>DL</td>
+<td>3.114574</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>WN</td>
+<td>2.501227</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>US</td>
+<td>2.345811</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>OO</td>
+<td>1.354808</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="항공사별-항공기-운항률" class="slide level2">
+<h2>항공사별 항공기 운항률</h2>
+</section>
+<section id="년-대비-15년-지표-비교" class="slide level2">
+<h2>13년 대비 15년 지표 비교</h2>
+<ul>
+<li><p>2013년 분석결과와 2016년 시가 총액을 기준으로 실제 데이터 지표를 비교하여, 항공사별 성장률 및 예측 비교모델 신뢰성 검증</p></li>
+<li><p>최적투자항공사 모델 선정</p></li>
+</ul>
+</section>
+<section id="기타참고-항공사의-운항점유율" class="slide level2">
+<h2>기타참고: 항공사의 운항점유율</h2>
+<div id="92175163" class="cell" data-execution_count="14">
+<div class="cell-output cell-output-display" data-execution_count="14">
+<pre><code>carrier
+AA    14.41
+AS     0.32
+B6    24.11
+DL    21.23
+HA     0.15
+OO     0.01
+UA    25.59
+US     8.77
+WN     5.40
+Name: occ%, dtype: float64</code></pre>
+</div>
+</div>
+
+</section>
+    </div>
+  <div class="quarto-auto-generated-content" style="display: none;">
+<div class="footer footer-default">
+
+</div>
+</div></div>
+
+  <script>window.backupDefine = window.define; window.define = undefined;</script>
+  <script src="project_format_ver.2_files/libs/revealjs/dist/reveal.js"></script>
+  <!-- reveal.js plugins -->
+  <script src="project_format_ver.2_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.js"></script>
+  <script src="project_format_ver.2_files/libs/revealjs/plugin/pdf-export/pdfexport.js"></script>
+  <script src="project_format_ver.2_files/libs/revealjs/plugin/reveal-menu/menu.js"></script>
+  <script src="project_format_ver.2_files/libs/revealjs/plugin/reveal-menu/quarto-menu.js"></script>
+  <script src="project_format_ver.2_files/libs/revealjs/plugin/quarto-support/support.js"></script>
+  
+
+  <script src="project_format_ver.2_files/libs/revealjs/plugin/notes/notes.js"></script>
+  <script src="project_format_ver.2_files/libs/revealjs/plugin/search/search.js"></script>
+  <script src="project_format_ver.2_files/libs/revealjs/plugin/zoom/zoom.js"></script>
+  <script src="project_format_ver.2_files/libs/revealjs/plugin/math/math.js"></script>
+  <script>window.define = window.backupDefine; window.backupDefine = undefined;</script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://revealjs.com/config/
+      Reveal.initialize({
+'controlsAuto': true,
+'previewLinksAuto': false,
+'pdfSeparateFragments': false,
+'autoAnimateEasing': "ease",
+'autoAnimateDuration': 1,
+'autoAnimateUnmatched': true,
+'jumpToSlide': true,
+'menu': {"side":"left","useTextContentForMissingTitles":true,"markers":false,"loadIcons":false,"custom":[{"title":"Tools","icon":"<i class=\"fas fa-gear\"></i>","content":"<ul class=\"slide-menu-items\">\n<li class=\"slide-tool-item active\" data-item=\"0\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.fullscreen(event)\"><kbd>f</kbd> Fullscreen</a></li>\n<li class=\"slide-tool-item\" data-item=\"1\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.speakerMode(event)\"><kbd>s</kbd> Speaker View</a></li>\n<li class=\"slide-tool-item\" data-item=\"2\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.overview(event)\"><kbd>o</kbd> Slide Overview</a></li>\n<li class=\"slide-tool-item\" data-item=\"3\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.togglePdfExport(event)\"><kbd>e</kbd> PDF Export Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"4\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.toggleScrollView(event)\"><kbd>r</kbd> Scroll View Mode</a></li>\n<li class=\"slide-tool-item\" data-item=\"5\"><a href=\"#\" onclick=\"RevealMenuToolHandlers.keyboardHelp(event)\"><kbd>?</kbd> Keyboard Help</a></li>\n</ul>"}],"openButton":true},
+'smaller': false,
+ 
+        // Display controls in the bottom right corner
+        controls: false,
+
+        // Help the user learn the controls by providing hints, for example by
+        // bouncing the down arrow when they first encounter a vertical slide
+        controlsTutorial: false,
+
+        // Determines where controls appear, "edges" or "bottom-right"
+        controlsLayout: 'edges',
+
+        // Visibility rule for backwards navigation arrows; "faded", "hidden"
+        // or "visible"
+        controlsBackArrows: 'faded',
+
+        // Display a presentation progress bar
+        progress: true,
+
+        // Display the page number of the current slide
+        slideNumber: false,
+
+        // 'all', 'print', or 'speaker'
+        showSlideNumber: 'all',
+
+        // Add the current slide number to the URL hash so that reloading the
+        // page/copying the URL will return you to the same slide
+        hash: true,
+
+        // Start with 1 for the hash rather than 0
+        hashOneBasedIndex: false,
+
+        // Flags if we should monitor the hash and change slides accordingly
+        respondToHashChanges: true,
+
+        // Push each slide change to the browser history
+        history: true,
+
+        // Enable keyboard shortcuts for navigation
+        keyboard: true,
+
+        // Enable the slide overview mode
+        overview: true,
+
+        // Disables the default reveal.js slide layout (scaling and centering)
+        // so that you can use custom CSS layout
+        disableLayout: false,
+
+        // Vertical centering of slides
+        center: false,
+
+        // Enables touch navigation on devices with touch input
+        touch: true,
+
+        // Loop the presentation
+        loop: false,
+
+        // Change the presentation direction to be RTL
+        rtl: false,
+
+        // see https://revealjs.com/vertical-slides/#navigation-mode
+        navigationMode: 'linear',
+
+        // Randomizes the order of slides each time the presentation loads
+        shuffle: false,
+
+        // Turns fragments on and off globally
+        fragments: true,
+
+        // Flags whether to include the current fragment in the URL,
+        // so that reloading brings you to the same fragment position
+        fragmentInURL: false,
+
+        // Flags if the presentation is running in an embedded mode,
+        // i.e. contained within a limited portion of the screen
+        embedded: false,
+
+        // Flags if we should show a help overlay when the questionmark
+        // key is pressed
+        help: true,
+
+        // Flags if it should be possible to pause the presentation (blackout)
+        pause: true,
+
+        // Flags if speaker notes should be visible to all viewers
+        showNotes: false,
+
+        // Global override for autoplaying embedded media (null/true/false)
+        autoPlayMedia: null,
+
+        // Global override for preloading lazy-loaded iframes (null/true/false)
+        preloadIframes: null,
+
+        // Number of milliseconds between automatically proceeding to the
+        // next slide, disabled when set to 0, this value can be overwritten
+        // by using a data-autoslide attribute on your slides
+        autoSlide: 0,
+
+        // Stop auto-sliding after user input
+        autoSlideStoppable: true,
+
+        // Use this method for navigation when auto-sliding
+        autoSlideMethod: null,
+
+        // Specify the average time in seconds that you think you will spend
+        // presenting each slide. This is used to show a pacing timer in the
+        // speaker view
+        defaultTiming: null,
+
+        // Enable slide navigation via mouse wheel
+        mouseWheel: false,
+
+        // The display mode that will be used to show slides
+        display: 'block',
+
+        // Hide cursor if inactive
+        hideInactiveCursor: true,
+
+        // Time before the cursor is hidden (in ms)
+        hideCursorTime: 5000,
+
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+
+        // Transition style (none/fade/slide/convex/concave/zoom)
+        transition: 'none',
+
+        // Transition speed (default/fast/slow)
+        transitionSpeed: 'default',
+
+        // Transition style for full page slide backgrounds
+        // (none/fade/slide/convex/concave/zoom)
+        backgroundTransition: 'none',
+
+        // Number of slides away from the current that are visible
+        viewDistance: 3,
+
+        // Number of slides away from the current that are visible on mobile
+        // devices. It is advisable to set this to a lower number than
+        // viewDistance in order to save resources.
+        mobileViewDistance: 2,
+
+        // The "normal" size of the presentation, aspect ratio will be preserved
+        // when the presentation is scaled to fit different resolutions. Can be
+        // specified using percentage units.
+        width: 1050,
+
+        height: 700,
+
+        // Factor of the display size that should remain empty around the content
+        margin: 0.1,
+
+        math: {
+          mathjax: 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js',
+          config: 'TeX-AMS_HTML-full',
+          tex2jax: {
+            inlineMath: [['\\(','\\)']],
+            displayMath: [['\\[','\\]']],
+            balanceBraces: true,
+            processEscapes: false,
+            processRefs: true,
+            processEnvironments: true,
+            preview: 'TeX',
+            skipTags: ['script','noscript','style','textarea','pre','code'],
+            ignoreClass: 'tex2jax_ignore',
+            processClass: 'tex2jax_process'
+          },
+        },
+
+        // reveal.js plugins
+        plugins: [QuartoLineHighlight, PdfExport, RevealMenu, QuartoSupport,
+
+          RevealMath,
+          RevealNotes,
+          RevealSearch,
+          RevealZoom
+        ]
+      });
+    </script>
+    <script id="quarto-html-after-body" type="application/javascript">
+      window.document.addEventListener("DOMContentLoaded", function (event) {
+        const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
+        tabsets.forEach(function(tabset) {
+          const tabby = new Tabby('#' + tabset.id);
+        });
+        const isCodeAnnotation = (el) => {
+          for (const clz of el.classList) {
+            if (clz.startsWith('code-annotation-')) {                     
+              return true;
+            }
+          }
+          return false;
+        }
+        const onCopySuccess = function(e) {
+          // button target
+          const button = e.trigger;
+          // don't keep focus
+          button.blur();
+          // flash "checked"
+          button.classList.add('code-copy-button-checked');
+          var currentTitle = button.getAttribute("title");
+          button.setAttribute("title", "Copied!");
+          let tooltip;
+          if (window.bootstrap) {
+            button.setAttribute("data-bs-toggle", "tooltip");
+            button.setAttribute("data-bs-placement", "left");
+            button.setAttribute("data-bs-title", "Copied!");
+            tooltip = new bootstrap.Tooltip(button, 
+              { trigger: "manual", 
+                customClass: "code-copy-button-tooltip",
+                offset: [0, -8]});
+            tooltip.show();    
+          }
+          setTimeout(function() {
+            if (tooltip) {
+              tooltip.hide();
+              button.removeAttribute("data-bs-title");
+              button.removeAttribute("data-bs-toggle");
+              button.removeAttribute("data-bs-placement");
+            }
+            button.setAttribute("title", currentTitle);
+            button.classList.remove('code-copy-button-checked');
+          }, 1000);
+          // clear code selection
+          e.clearSelection();
+        }
+        const getTextToCopy = function(trigger) {
+            const codeEl = trigger.previousElementSibling.cloneNode(true);
+            for (const childEl of codeEl.children) {
+              if (isCodeAnnotation(childEl)) {
+                childEl.remove();
+              }
+            }
+            return codeEl.innerText;
+        }
+        const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+          text: getTextToCopy
+        });
+        clipboard.on('success', onCopySuccess);
+        if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+          const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+            text: getTextToCopy,
+            container: window.document.getElementById('quarto-embedded-source-code-modal')
+          });
+          clipboardModal.on('success', onCopySuccess);
+        }
+          var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+          var mailtoRegex = new RegExp(/^mailto:/);
+            var filterRegex = new RegExp('/' + window.location.host + '/');
+          var isInternal = (href) => {
+              return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+          }
+          // Inspect non-navigation links and adorn them if external
+         var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+          for (var i=0; i<links.length; i++) {
+            const link = links[i];
+            if (!isInternal(link.href)) {
+              // undo the damage that might have been done by quarto-nav.js in the case of
+              // links that we want to consider external
+              if (link.dataset.originalHref !== undefined) {
+                link.href = link.dataset.originalHref;
+              }
+            }
+          }
+        function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+          const config = {
+            allowHTML: true,
+            maxWidth: 500,
+            delay: 100,
+            arrow: false,
+            appendTo: function(el) {
+                return el.closest('section.slide') || el.parentElement;
+            },
+            interactive: true,
+            interactiveBorder: 10,
+            theme: 'light-border',
+            placement: 'bottom-start',
+          };
+          if (contentFn) {
+            config.content = contentFn;
+          }
+          if (onTriggerFn) {
+            config.onTrigger = onTriggerFn;
+          }
+          if (onUntriggerFn) {
+            config.onUntrigger = onUntriggerFn;
+          }
+            config['offset'] = [0,0];
+            config['maxWidth'] = 700;
+          window.tippy(el, config); 
+        }
+        const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+        for (var i=0; i<noterefs.length; i++) {
+          const ref = noterefs[i];
+          tippyHover(ref, function() {
+            // use id or data attribute instead here
+            let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+            try { href = new URL(href).hash; } catch {}
+            const id = href.replace(/^#\/?/, "");
+            const note = window.document.getElementById(id);
+            if (note) {
+              return note.innerHTML;
+            } else {
+              return "";
+            }
+          });
+        }
+        const findCites = (el) => {
+          const parentEl = el.parentElement;
+          if (parentEl) {
+            const cites = parentEl.dataset.cites;
+            if (cites) {
+              return {
+                el,
+                cites: cites.split(' ')
+              };
+            } else {
+              return findCites(el.parentElement)
+            }
+          } else {
+            return undefined;
+          }
+        };
+        var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+        for (var i=0; i<bibliorefs.length; i++) {
+          const ref = bibliorefs[i];
+          const citeInfo = findCites(ref);
+          if (citeInfo) {
+            tippyHover(citeInfo.el, function() {
+              var popup = window.document.createElement('div');
+              citeInfo.cites.forEach(function(cite) {
+                var citeDiv = window.document.createElement('div');
+                citeDiv.classList.add('hanging-indent');
+                citeDiv.classList.add('csl-entry');
+                var biblioDiv = window.document.getElementById('ref-' + cite);
+                if (biblioDiv) {
+                  citeDiv.innerHTML = biblioDiv.innerHTML;
+                }
+                popup.appendChild(citeDiv);
+              });
+              return popup.innerHTML;
+            });
+          }
+        }
+      });
+      </script>
+    
+
+</body></html>
