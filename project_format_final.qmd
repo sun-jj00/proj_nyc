@@ -31,11 +31,16 @@ jupyter: python3
 ## 2. 분석내용
 
 -   총 9개사에 한해서만 분석 진행
+    -   AA: 아메리칸 항공, AS: 알레스카 항공, B6: 제트블루 항공
+    -   DL: 델타 항공, HA: 하와이안 항공, OO: 스카이웨스트 항공
+    -   UA: 유나이티드 항공, US: US항공, WN: 사우스웨스트 항공\
 -   운행안정성
 -   노후화항공기 운행률
 -   항공사의 항공기 활용률
 
 총 4가지 기준을 바탕으로 기업 가치 및 성장가능성 분석
+
+------------------------------------------------------------------------
 
 ## 3. 활용 데이터
 
@@ -303,6 +308,8 @@ plt.show()
 
 ```
 
+-   지연률이 가장 낮은 항공사는 HA(하와이안 항공)
+
 ------------------------------------------------------------------------
 
 ## (2) 도착지연률 {.smaller}
@@ -463,6 +470,8 @@ plot_stacked_bar(plot_df, origin=None, title='항공사별 도착 지연 구간 
 
 ```
 
+-   지연률이 가장 낮은 항공사는 HA(하와이안 항공)
+
 ## (3) 결항률 {.smaller}
 
 ::: {style="font-size: 30px"}
@@ -567,7 +576,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-------------------------------------------------------------------------
+-   결항률이 가장 높은 항공사 OO(스카이 웨스트)
 
 ## 분석2: 투자 Risk-노후화 항공기
 
@@ -728,6 +737,8 @@ plt.show()
 
 ```
 
+-   OO항공사(스카이웨스트) 신형항공기 운행률 가장 높음
+
 ------------------------------------------------------------------------
 
 ## 분석3: 항공사별 항공기 활용률
@@ -774,8 +785,7 @@ dff2 = dff.rename(columns= {'carrier': '항공사', 'avg_airtime': '활용률'})
 dff2
 ```
 
-
-------------------------------------------------------------------------
+-   가장 운항 효율성이 높은 항공사는 HA(하와이안 항공사)
 
 ## 13년 대비 15년 지표 비교
 
@@ -790,7 +800,6 @@ dff2
 ## 데이터 프레임 {.smaller}
 
 ::: {style="font-size: 22px"}
-
 ```{python}
 dep_delay = pd.read_csv('dep_delay_total.csv')
 arr_delay = pd.read_csv('arr_delay_total.csv')
@@ -870,7 +879,6 @@ table th {
 # CSS + 테이블 합쳐서 출력
 HTML(style + html_table)
 ```
-
 :::
 
 ## 스케일링 및 총합 스코어 도출 {.smaller}
@@ -957,28 +965,28 @@ act = actual.sort_values(by= 'mc_cagr', ascending=False)
 
 ------------------------------------------------------------------------
 
-## {.smaller}
+##  {.smaller}
 
 ::::: columns
 ::: {.column width="50%"}
-### -실제 시총 성장률 순위 {style="font-size:90%;"} 
-
-```{python}
-act2 = act.reset_index()
-del act2['index']
-act2 = act2.rename(columns= {'carrier': '항공사', 'mc_cagr': '시총성장'})
-act2
-```
-:::
-
-::: {.column width="50%"}
-### -총합 스코어 순위 {style="font-size:90%;"}
+### - 총합 스코어 순위 {style="font-size:90%;"}
 
 ```{python}
 pre3 = pre2.reset_index()
 del pre3['index']
 pre3 = pre3.rename(columns = {'carrier': '항공사', 'total_score': '총점'})
 pre3
+```
+:::
+
+::: {.column width="50%"}
+### -실제 시총 성장률 순위 {style="font-size:90%;"}
+
+```{python}
+act2 = act.reset_index()
+del act2['index']
+act2 = act2.rename(columns= {'carrier': '항공사', 'mc_cagr': '시총성장'})
+act2
 ```
 :::
 :::::
@@ -1306,7 +1314,7 @@ print(f"운항 효율 Spearman 상관 (act vs op): ρ={rho_op:.3f}")
 
 ------------------------------------------------------------------------
 
-## 부록 
+## 부록
 
 -   출발/도착 지연률의 경우 결측치는 모두 제외
 
