@@ -222,7 +222,13 @@
 <section id="분석내용" class="slide level2">
 <h2>2. 분석내용</h2>
 <ul>
-<li>총 9개사에 한해서만 분석 진행</li>
+<li>총 9개사에 한해서만 분석 진행
+<ul>
+<li>AA: 아메리칸 항공, AS: 알레스카 항공, B6: 제트블루 항공</li>
+<li>DL: 델타 항공, HA: 하와이안 항공, OO: 스카이웨스트 항공</li>
+<li>UA: 유나이티드 항공, US: US항공, WN: 사우스웨스트 항공<br>
+</li>
+</ul></li>
 <li>운행안정성</li>
 <li>노후화항공기 운행률</li>
 <li>항공사의 항공기 활용률</li>
@@ -231,7 +237,7 @@
 </section>
 <section id="활용-데이터" class="slide level2">
 <h2>3. 활용 데이터</h2>
-<div id="4e870d4e" class="cell" data-execution_count="1">
+<div id="981e9241" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href=""></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
@@ -278,7 +284,7 @@
 <li>지연률 = 지연된 항공편 수/전체 항공편 수) * 100</li>
 </ul>
 <div style="font-size: 14px">
-<div id="7ae6c7b1" class="cell" data-execution_count="2">
+<div id="74ba0c9f" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href=""></a><span class="co"># 결측치가 하나라도 있는 행 제거</span></span>
@@ -325,7 +331,7 @@
 <span id="cb2-42"><a href=""></a>).reset_index()</span>
 <span id="cb2-43"><a href=""></a>pivot</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="44">
+<div class="cell-output cell-output-display" data-execution_count="2">
 <div>
 <style scoped="">
     .dataframe tbody tr th:only-of-type {
@@ -541,7 +547,7 @@
 <p>적음을 알수 있음</p></li>
 </ul>
 </div><div class="column" style="width:60%;">
-<div id="27735a13" class="cell" data-execution_count="3">
+<div id="ac2c09c5" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href=""></a><span class="co"># 1. 지연 구간 분류 함수</span></span>
@@ -597,7 +603,7 @@
 </section>
 <section id="항공사별-출발지연률" class="slide level2">
 <h2>항공사별 출발지연률</h2>
-<div id="6d0a1516" class="cell" data-execution_count="4">
+<div id="379079b2" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href=""></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
@@ -709,11 +715,14 @@
 </details>
 
 </div>
-<img data-src="project_format_final_files/figure-revealjs/cell-5-output-1.png" class="r-stretch"></section>
+<img data-src="project_format_final_files/figure-revealjs/cell-5-output-1.png" class="r-stretch"><ul>
+<li>지연률이 가장 낮은 항공사는 HA(하와이안 항공)</li>
+</ul>
+</section>
 <section id="도착지연률" class="slide level2 smaller">
 <h2>(2) 도착지연률</h2>
 <div style="font-size: 14px">
-<div id="a97c8b4c" class="cell" data-execution_count="5">
+<div id="6db8c2d4" class="cell" data-execution_count="5">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href=""></a><span class="co"># arr_delay 분석을 위한 결측치 제거</span></span>
@@ -750,7 +759,7 @@
 <span id="cb5-32"><a href=""></a>pivot_percent_round <span class="op">=</span> pivot_percent.<span class="bu">round</span>(<span class="dv">2</span>)</span>
 <span id="cb5-33"><a href=""></a>pivot_percent_round</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="47">
+<div class="cell-output cell-output-display" data-execution_count="5">
 <div>
 <style scoped="">
     .dataframe tbody tr th:only-of-type {
@@ -933,7 +942,7 @@
 <p>적음을 알수 있음</p></li>
 </ul>
 </div><div class="column" style="width:60%;">
-<div id="14936754" class="cell" data-execution_count="6">
+<div id="c7363ed4" class="cell" data-execution_count="6">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href=""></a><span class="co"># 그룹핑 후 비율 테이블 생성</span></span>
@@ -985,7 +994,7 @@
 </section>
 <section id="항공사별-도착지연률" class="slide level2">
 <h2>항공사별 도착지연률</h2>
-<div id="c33bad1d" class="cell" data-execution_count="7">
+<div id="543800e3" class="cell" data-execution_count="7">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href=""></a><span class="co">######################항공사별 도착 지연 구간 비율</span></span>
@@ -1044,11 +1053,14 @@
 </details>
 
 </div>
-<img data-src="project_format_final_files/figure-revealjs/cell-8-output-1.png" class="r-stretch"></section>
+<img data-src="project_format_final_files/figure-revealjs/cell-8-output-1.png" class="r-stretch"><ul>
+<li>지연률이 가장 낮은 항공사는 HA(하와이안 항공)</li>
+</ul>
+</section>
 <section id="결항률" class="slide level2 smaller">
 <h2>(3) 결항률</h2>
 <div style="font-size: 30px">
-<div id="31c36617" class="cell" data-execution_count="8">
+<div id="e200e3f3" class="cell" data-execution_count="8">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href=""></a><span class="co"># 결항 여부 판단</span></span>
@@ -1090,7 +1102,7 @@
 <span id="cb8-37"><a href=""></a></span>
 <span id="cb8-38"><a href=""></a>cancel_pivot_table1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="50">
+<div class="cell-output cell-output-display" data-execution_count="8">
 <div>
 <style scoped="">
     .dataframe tbody tr th:only-of-type {
@@ -1172,7 +1184,7 @@
 </section>
 <section id="항공사별-평균-결항률" class="slide level2">
 <h2>항공사별 평균 결항률</h2>
-<div id="73d6ae8c" class="cell" data-execution_count="9">
+<div id="7ed78895" class="cell" data-execution_count="9">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href=""></a><span class="co"># 항공사별 평균 결항률 계산 (NaN 제외)</span></span>
@@ -1232,7 +1244,10 @@
 </details>
 
 </div>
-<img data-src="project_format_final_files/figure-revealjs/cell-10-output-1.png" class="r-stretch"></section>
+<img data-src="project_format_final_files/figure-revealjs/cell-10-output-1.png" class="r-stretch"><ul>
+<li>결항률이 가장 높은 항공사 OO(스카이 웨스트)</li>
+</ul>
+</section>
 <section id="분석2-투자-risk-노후화-항공기" class="slide level2">
 <h2>분석2: 투자 Risk-노후화 항공기</h2>
 <ul>
@@ -1245,7 +1260,7 @@
 </section>
 <section id="항공사별-노후화-항공기-운행률" class="slide level2 smaller">
 <h2>항공사별 노후화 항공기 운행률</h2>
-<div id="e27bc2c5" class="cell" data-execution_count="10">
+<div id="330b2e66" class="cell" data-execution_count="10">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href=""></a><span class="co"># loc와 isin을 사용한 필터링</span></span>
@@ -1290,7 +1305,7 @@
 <span id="cb10-40"><a href=""></a><span class="co"># CSS + 테이블 합쳐서 출력</span></span>
 <span id="cb10-41"><a href=""></a>HTML(style <span class="op">+</span> html_table)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="52">
+<div class="cell-output cell-output-display" data-execution_count="10">
 <style>
 table th {
     font-size: 80%;      /* ✅ 열 제목 폰트 크기 줄이기 */
@@ -1399,7 +1414,7 @@ table th {
 </section>
 <section id="항공사별-노후화-항공기-운행률-1" class="slide level2">
 <h2>항공사별 노후화 항공기 운행률</h2>
-<div id="a9bfea49" class="cell" data-execution_count="11">
+<div id="b57fb92b" class="cell" data-execution_count="11">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href=""></a>pivot_result1 <span class="op">=</span> result.pivot_table(index<span class="op">=</span><span class="st">'carrier'</span>, columns<span class="op">=</span><span class="st">'class'</span>,</span>
@@ -1504,7 +1519,10 @@ table th {
 </details>
 
 </div>
-<img data-src="project_format_final_files/figure-revealjs/cell-12-output-1.png" class="r-stretch"></section>
+<img data-src="project_format_final_files/figure-revealjs/cell-12-output-1.png" class="r-stretch"><ul>
+<li>OO항공사(스카이웨스트) 신형항공기 운행률 가장 높음</li>
+</ul>
+</section>
 <section id="분석3-항공사별-항공기-활용률" class="slide level2">
 <h2>분석3: 항공사별 항공기 활용률</h2>
 <ul>
@@ -1515,7 +1533,7 @@ table th {
 </section>
 <section id="각-항공기별-하루평균-운항시간" class="slide level2 smaller">
 <h2>각 항공기별 하루평균 운항시간</h2>
-<div id="597be93b" class="cell" data-execution_count="12">
+<div id="c107b61d" class="cell" data-execution_count="12">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href=""></a><span class="co"># loc와 isin을 사용한 필터링</span></span>
@@ -1552,7 +1570,7 @@ table th {
 <span id="cb12-32"><a href=""></a>dff2 <span class="op">=</span> dff.rename(columns<span class="op">=</span> {<span class="st">'carrier'</span>: <span class="st">'항공사'</span>, <span class="st">'avg_airtime'</span>: <span class="st">'활용률'</span>})</span>
 <span id="cb12-33"><a href=""></a>dff2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="54">
+<div class="cell-output cell-output-display" data-execution_count="12">
 <div>
 <style scoped="">
     .dataframe tbody tr th:only-of-type {
@@ -1628,6 +1646,9 @@ table th {
 </div>
 </div>
 </div>
+<ul>
+<li>가장 운항 효율성이 높은 항공사는 HA(하와이안 항공사)</li>
+</ul>
 </section>
 <section id="년-대비-15년-지표-비교" class="slide level2">
 <h2>13년 대비 15년 지표 비교</h2>
@@ -1641,7 +1662,7 @@ table th {
 <section id="데이터-프레임" class="slide level2 smaller">
 <h2>데이터 프레임</h2>
 <div style="font-size: 22px">
-<div id="33e84c85" class="cell" data-execution_count="13">
+<div id="4c252c5f" class="cell" data-execution_count="13">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href=""></a>dep_delay <span class="op">=</span> pd.read_csv(<span class="st">'dep_delay_total.csv'</span>)</span>
@@ -1722,7 +1743,7 @@ table th {
 <span id="cb13-76"><a href=""></a><span class="co"># CSS + 테이블 합쳐서 출력</span></span>
 <span id="cb13-77"><a href=""></a>HTML(style <span class="op">+</span> html_table)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="55">
+<div class="cell-output cell-output-display" data-execution_count="13">
 <style>
 table th {
     font-size: 80%;      /* ✅ 열 제목 폰트 크기 줄이기 */
@@ -1852,8 +1873,8 @@ table th {
 </section>
 <section id="스케일링-및-총합-스코어-도출" class="slide level2 smaller">
 <h2>스케일링 및 총합 스코어 도출</h2>
-<div id="15c670f7" class="cell" data-execution_count="14">
-<div class="cell-output cell-output-display" data-execution_count="56">
+<div id="bb4e5a7e" class="cell" data-execution_count="14">
+<div class="cell-output cell-output-display" data-execution_count="14">
 <style>
 table th {
     font-size: 80%;      /* ✅ 열 제목 폰트 크기 줄이기 */
@@ -1993,7 +2014,7 @@ table th {
 <li>0부터 10사이의 점수를 갖도록 스케일링한 스코어 도출</li>
 <li>총점은 각 항목의 스코어 평균으로 도출</li>
 </ul>
-<div id="12ec05db" class="cell" data-execution_count="15">
+<div id="894bbeb7" class="cell" data-execution_count="15">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href=""></a><span class="co">## 실제값과 비교</span></span>
@@ -2007,102 +2028,16 @@ table th {
 <h2></h2>
 <div class="columns">
 <div class="column" style="width:50%;">
-<h3 style="font-size:90%;" id="실제-시총-성장률-순위">-실제 시총 성장률 순위</h3>
-<div id="bbfdbbb5" class="cell" data-execution_count="16">
+<h3 style="font-size:90%;" id="총합-스코어-순위">- 총합 스코어 순위</h3>
+<div id="4a84990c" class="cell" data-execution_count="16">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href=""></a>act2 <span class="op">=</span> act.reset_index()</span>
-<span id="cb15-2"><a href=""></a><span class="kw">del</span> act2[<span class="st">'index'</span>]</span>
-<span id="cb15-3"><a href=""></a>act2 <span class="op">=</span> act2.rename(columns<span class="op">=</span> {<span class="st">'carrier'</span>: <span class="st">'항공사'</span>, <span class="st">'mc_cagr'</span>: <span class="st">'시총성장'</span>})</span>
-<span id="cb15-4"><a href=""></a>act2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href=""></a>pre3 <span class="op">=</span> pre2.reset_index()</span>
+<span id="cb15-2"><a href=""></a><span class="kw">del</span> pre3[<span class="st">'index'</span>]</span>
+<span id="cb15-3"><a href=""></a>pre3 <span class="op">=</span> pre3.rename(columns <span class="op">=</span> {<span class="st">'carrier'</span>: <span class="st">'항공사'</span>, <span class="st">'total_score'</span>: <span class="st">'총점'</span>})</span>
+<span id="cb15-4"><a href=""></a>pre3</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="58">
-<div>
-<style scoped="">
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-
-<table class="dataframe caption-top" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header" style="text-align: right;">
-<th data-quarto-table-cell-role="th"></th>
-<th data-quarto-table-cell-role="th">항공사</th>
-<th data-quarto-table-cell-role="th">시총성장</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">0</td>
-<td>AA</td>
-<td>100.3</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">1</td>
-<td>HA</td>
-<td>93.9</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">2</td>
-<td>B6</td>
-<td>70.1</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">3</td>
-<td>WN</td>
-<td>45.4</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">4</td>
-<td>AS</td>
-<td>41.3</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">5</td>
-<td>DL</td>
-<td>29.9</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">6</td>
-<td>UA</td>
-<td>23.5</td>
-</tr>
-<tr class="even">
-<td data-quarto-table-cell-role="th">7</td>
-<td>OO</td>
-<td>13.7</td>
-</tr>
-<tr class="odd">
-<td data-quarto-table-cell-role="th">8</td>
-<td>US</td>
-<td>NaN</td>
-</tr>
-</tbody>
-</table>
-
-</div>
-</div>
-</div>
-</div><div class="column" style="width:50%;">
-<h3 style="font-size:90%;" id="총합-스코어-순위">-총합 스코어 순위</h3>
-<div id="329ad79b" class="cell" data-execution_count="17">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href=""></a>pre3 <span class="op">=</span> pre2.reset_index()</span>
-<span id="cb16-2"><a href=""></a><span class="kw">del</span> pre3[<span class="st">'index'</span>]</span>
-<span id="cb16-3"><a href=""></a>pre3 <span class="op">=</span> pre3.rename(columns <span class="op">=</span> {<span class="st">'carrier'</span>: <span class="st">'항공사'</span>, <span class="st">'total_score'</span>: <span class="st">'총점'</span>})</span>
-<span id="cb16-4"><a href=""></a>pre3</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-display" data-execution_count="59">
+<div class="cell-output cell-output-display" data-execution_count="16">
 <div>
 <style scoped="">
     .dataframe tbody tr th:only-of-type {
@@ -2178,13 +2113,99 @@ table th {
 </div>
 </div>
 </div>
+</div><div class="column" style="width:50%;">
+<h3 style="font-size:90%;" id="실제-시총-성장률-순위">-실제 시총 성장률 순위</h3>
+<div id="2b306f18" class="cell" data-execution_count="17">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href=""></a>act2 <span class="op">=</span> act.reset_index()</span>
+<span id="cb16-2"><a href=""></a><span class="kw">del</span> act2[<span class="st">'index'</span>]</span>
+<span id="cb16-3"><a href=""></a>act2 <span class="op">=</span> act2.rename(columns<span class="op">=</span> {<span class="st">'carrier'</span>: <span class="st">'항공사'</span>, <span class="st">'mc_cagr'</span>: <span class="st">'시총성장'</span>})</span>
+<span id="cb16-4"><a href=""></a>act2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display" data-execution_count="17">
+<div>
+<style scoped="">
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+
+<table class="dataframe caption-top" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header" style="text-align: right;">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">항공사</th>
+<th data-quarto-table-cell-role="th">시총성장</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>AA</td>
+<td>100.3</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>HA</td>
+<td>93.9</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2</td>
+<td>B6</td>
+<td>70.1</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">3</td>
+<td>WN</td>
+<td>45.4</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">4</td>
+<td>AS</td>
+<td>41.3</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">5</td>
+<td>DL</td>
+<td>29.9</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">6</td>
+<td>UA</td>
+<td>23.5</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">7</td>
+<td>OO</td>
+<td>13.7</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">8</td>
+<td>US</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
 </div></div>
 </section>
 <section id="항공사별-지표-비교" class="slide level2">
 <h2>항공사별 지표 비교</h2>
 <div class="columns">
 <div class="column" style="width:50%;">
-<div id="25a3aeeb" class="cell" data-execution_count="18">
+<div id="d2889791" class="cell" data-execution_count="18">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href=""></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
@@ -2278,7 +2299,7 @@ table th {
 </div>
 </div>
 </div><div class="column" style="width:50%;">
-<div id="ceb47298" class="cell" data-execution_count="19">
+<div id="4e478972" class="cell" data-execution_count="19">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href=""></a>plot_radar(rank_df_ranked, bottom3, <span class="st">'하위 3개 항공사 비교 (등수 기반)'</span>, bottom_colors)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -2298,7 +2319,7 @@ table th {
 <ul>
 <li>투자 대상 선정 : 하와이안 Airlines(종합 1등)</li>
 </ul>
-<div id="e9063e7f" class="cell" data-execution_count="20">
+<div id="8814159c" class="cell" data-execution_count="20">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href=""></a><span class="co">#################찐최종</span></span>
@@ -2463,7 +2484,7 @@ table th {
 <ul>
 <li>nycflights13 데이터로 도출한 지표들과 실제 성장률간의 관련성</li>
 </ul>
-<div id="289bb535" class="cell" data-execution_count="21">
+<div id="d31ca1f7" class="cell" data-execution_count="21">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource python number-lines code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href=""></a><span class="co">#번외 + 상관계수 도출</span></span>
