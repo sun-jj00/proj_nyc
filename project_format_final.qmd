@@ -82,7 +82,7 @@ df_filtered1 = df_filtered
 
 ## (1) 출발지연률 {.smaller}
 
--   지연률 = 지연된 항공편 수/전체 항공편 수) \* 100
+-   지연률 = (지연된 항공편 수/전체 항공편 수) \* 100
 
 ::: {style="font-size: 14px"}
 ```{python}
