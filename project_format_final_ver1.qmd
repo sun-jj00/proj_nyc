@@ -1,0 +1,1327 @@
+---
+title: "2013년 항공사 투자 분석"
+format: 
+  revealjs:
+    code-fold: true
+    echo: true
+jupyter: python3
+---
+
+## 목차
+
+1.  주제
+2.  분석내용
+3.  활용 데이터
+4.  타당성 검증(15년 지표비교)
+
+------------------------------------------------------------------------
+
+## 1. 주제
+
+-   2013년 기준, 뉴욕 공항 이용 데이터를 활용하여 기업 가치 /
+
+    성장가능성을 분석해 투자 기업 선정
+
+-   2년후(2015년)의 시가총액과 비교하여 데이터 분석의
+
+    정확성과 타당성 검증
+
+------------------------------------------------------------------------
+
+## 2. 분석내용
+
+-   총 9개사에 한해서만 분석 진행
+    -   AA: 아메리칸 항공, AS: 알레스카 항공, B6: 제트블루 항공
+    -   DL: 델타 항공, HA: 하와이안 항공, OO: 스카이웨스트 항공
+    -   UA: 유나이티드 항공, US: US항공, WN: 사우스웨스트 항공\
+-   운행안정성
+-   노후화항공기 운행률
+-   항공사의 항공기 활용률
+
+총 4가지 기준을 바탕으로 기업 가치 및 성장가능성 분석
+
+------------------------------------------------------------------------
+
+## 3. 활용 데이터
+
+```{python}
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# 항공편 데이터 (main dataset)
+import nycflights13 as flights
+df_flights = flights.flights
+df_airlines = flights.airlines
+df_airports = flights.airports
+df_planes = flights.planes
+df_weather = flights.weather
+
+# 한글 사용 가능(맑은 고딕)
+plt.rcParams['font.family'] = 'Malgun Gothic'
+plt.rcParams['axes.unicode_minus'] = False
+
+# 사용할 항공사 리스트 필터링
+airlines_filter = ['AA', 'AS', 'B6', 'DL', 'HA', 'OO', 'UA', 'US', 'WN']
+df_filtered = df_flights.loc[df_flights['carrier'].isin(airlines_filter)]
+df_filtered1 = df_filtered
+```
+
+-   nycflights13
+
+-   기업 별 재무정보 데이터(2010 \~ 2013) :
+
+    -   성장성(매출 연평균 성장률), 수익성(영업이익 연평균 성장률), 안정성(부채비율)
+
+-   시가총액 데이터(2013 \~ 2015)
+
+## 분석1: 운행 안정성
+
+-   출발지연률, 도착지연률, 결항률 세가지 지표를 통해 도출
+
+## (1) 출발지연률 {.smaller}
+
+-   지연률 = (지연된 항공편 수/전체 항공편 수) \* 100
+
+::: {style="font-size: 14px"}
+```{python}
+# 결측치가 하나라도 있는 행 제거
+df_filtered = df_filtered.dropna()
+
+# 지연 여부 컬럼 생성 ()
+def classify_delay(delay):
+    if delay <= 10:
+        return '빠른출발 및 정시출발(10분이내)'
+    elif delay < 60:
+        return '10분~1시간 출발지연'
+    else:
+        return '1시간 이상 출발지연'
+
+df_filtered['classify_delay'] = df_filtered['dep_delay'].apply(classify_delay)
+df_filtered
+
+# 전체 건수 기준으로 그룹화
+delay_counts = (
+    df_filtered
+    .groupby(['origin', 'carrier', 'classify_delay'])
+    .size()
+    .reset_index(name='count')
+)
+
+# 총 편수 구하기 
+total_counts = (
+    df_filtered
+    .groupby(['origin', 'carrier'])
+    .size()
+    .reset_index(name='total')
+)
+
+# 지연률 퍼센트화
+delay_merged = pd.merge(delay_counts, total_counts, on=['origin', 'carrier'])
+delay_merged['delay_pct'] = (delay_merged['count'] / delay_merged['total'] * 100).round(2)
+
+# 피벗테이블 출력
+pivot = delay_merged.pivot_table(
+    index=['origin', 'carrier'],
+    columns='classify_delay',
+    values='delay_pct',
+    fill_value=0
+).reset_index()
+pivot
+
+```
+:::
+
+## 공항별 정시출발률
+
+::::: columns
+::: {.column width="40%"}
+-   공항별 차이가
+
+    크지 않음.
+
+-   공항에 따른 지연률의
+
+    상관관계가
+
+    적음을 알수 있음
+:::
+
+::: {.column width="60%"}
+```{python}
+
+# 1. 지연 구간 분류 함수
+def classify_delay_v2(delay):
+    if delay <= 10:
+        return '빠른출발 및 정시출발(10분이내)'
+    elif delay < 60:
+        return '10분~1시간 출발지연'
+    else:
+        return '1시간 이상 출발지연'
+
+# 2. 필터링 및 전처리
+df_filtered = df_flights[df_flights['carrier'].isin(airlines_filter)].dropna()
+df_filtered['classify_delay'] = df_filtered['dep_delay'].apply(classify_delay_v2)
+
+# 3. 지연률 계산
+delay_counts = df_filtered.groupby(['origin', 'carrier', 'classify_delay']).size().reset_index(name='count')
+total_counts = df_filtered.groupby(['origin', 'carrier']).size().reset_index(name='total')
+merged = pd.merge(delay_counts, total_counts, on=['origin', 'carrier'])
+merged['delay_pct'] = (merged['count'] / merged['total'] * 100).round(2)
+
+# 4. 피벗: 정시율만 뽑기
+pivot = merged[merged['classify_delay'] == '빠른출발 및 정시출발(10분이내)']
+heatmap_data = pivot.pivot(index='carrier', columns='origin', values='delay_pct')
+
+# 5. 시각화: 히트맵
+plt.figure(figsize=(8, 6))
+sns.heatmap(
+    heatmap_data,
+    annot=True,         # 셀 안에 숫자 표시
+    fmt='.1f',          # 소수점 1자리
+    cmap='YlGnBu',      # 색상 그라데이션
+    linewidths=0.5,
+    linecolor='gray',
+    cbar_kws={'label': '정시출발 비율 (%)'}
+)
+
+plt.title('공항별 항공사의 빠른/정시 출발률', fontsize=20)
+plt.xlabel('출발 공항', fontsize=17)
+plt.ylabel('항공사', fontsize=17)
+plt.tight_layout()
+plt.show()
+
+```
+:::
+:::::
+
+## 항공사별 출발지연률
+
+```{python}
+import matplotlib.pyplot as plt
+import pandas as pd
+
+# 1. 항공사 필터링 및 결측치 제거
+airlines_filter = ['AA', 'AS', 'B6', 'DL', 'HA', 'OO', 'UA', 'US', 'WN']
+df_filtered = df_flights[df_flights['carrier'].isin(airlines_filter)].dropna()
+
+# 2. 지연 구간 분류 함수
+def classify_delay_v2(delay):
+    if delay <= 10:
+        return '빠른출발 및 정시출발(10분이내)'
+    elif delay < 60:
+        return '10분~1시간 출발지연'
+    else:
+        return '1시간 이상 출발지연'
+
+df_filtered['classify_delay'] = df_filtered['dep_delay'].apply(classify_delay_v2)
+
+# 3. 그룹별 건수 및 퍼센트 계산
+grouped = df_filtered.groupby(['carrier', 'classify_delay']).size().reset_index(name='count')
+total = df_filtered.groupby('carrier').size().reset_index(name='total')
+merged = pd.merge(grouped, total, on='carrier')
+merged['pct'] = (merged['count'] / merged['total'] * 100).round(2)
+
+# 4. 피벗테이블 생성 및 정렬
+pivot = merged.pivot(index='carrier', columns='classify_delay', values='pct').fillna(0)
+pivot = pivot[['빠른출발 및 정시출발(10분이내)', '10분~1시간 출발지연', '1시간 이상 출발지연']]
+pivot = pivot.sort_values(by='빠른출발 및 정시출발(10분이내)', ascending=True)
+
+# 5. 색상 설정 (파스텔톤)
+colors = ['#80b1d3', '#fdb462','#fb8072'] 
+
+# ✅ 6-1. 모든 공항(EWR, JFK, LGA)에서 운항하는 항공사 찾기
+airports = ['EWR', 'JFK', 'LGA']
+airport_sets = [set(df_filtered[df_filtered['origin'] == ap]['carrier'].unique()) for ap in airports]
+common_carriers = set.intersection(*airport_sets)
+
+# ✅ 6-2. 시각화
+fig, ax = plt.subplots(figsize=(10, 6))
+left = [0] * len(pivot)
+carriers = pivot.index.tolist()
+
+for i, col in enumerate(pivot.columns):
+    bar = ax.barh(
+        carriers,
+        pivot[col],
+        left=left,
+        color=colors[i],
+        label=col,
+        edgecolor='black',      # ✅ 막대 테두리
+        linewidth=0.8
+    )
+
+    for j, rect in enumerate(bar):
+        width = rect.get_width()
+        if width > 3:
+            ax.text(
+                rect.get_x() + width / 2,
+                rect.get_y() + rect.get_height() / 2,
+                f'{width:.1f}%',
+                ha='center',
+                va='center',
+                fontsize=9,
+                bbox=dict(facecolor='white', edgecolor='none', boxstyle='round,pad=0.2')
+            )
+
+    left = [l + w for l, w in zip(left, pivot[col])]
+
+# ✅ 7. 라벨 강조 (3개 공항 다 운항하는 항공사: 노란색 배경)
+for i, carrier in enumerate(carriers):
+    if carrier in common_carriers:
+        ax.text(
+            -1,  # 그래프 왼쪽 바깥쪽 위치
+            i,
+            carrier,
+            va='center',
+            ha='right',
+            fontsize=10,
+            weight='bold',
+            bbox=dict(facecolor='yellow', edgecolor='black', boxstyle='round,pad=0.2')
+        )
+    else:
+        ax.text(
+            -1,
+            i,
+            carrier,
+            va='center',
+            ha='right',
+            fontsize=10
+        )
+
+# 8. 꾸미기
+ax.set_xlabel('비율 (%)')
+ax.set_title('항공사별 출발지연 구간 비율')
+ax.legend(
+    title='지연 구간',
+    loc='upper right',
+    bbox_to_anchor=(1.0, 1.3),
+    ncol=1,
+    frameon=True,
+    edgecolor="lightgray"
+)
+ax.set_yticks([])  # y축 항공사 이름은 수동으로 텍스트로 넣었으므로 숨김
+
+plt.tight_layout()
+plt.show()
+
+```
+
+-   지연률이 가장 낮은 항공사는 HA(하와이안 항공)
+
+------------------------------------------------------------------------
+
+## (2) 도착지연률 {.smaller}
+
+::: {style="font-size: 14px"}
+```{python}
+# arr_delay 분석을 위한 결측치 제거
+df_filtered = df_filtered.dropna()
+
+# 출발지(origin)에 다른 항공사(carrier)별 도착지연(arr_delay) 분석을 위한 칼럼 추출
+delay_set = df_filtered[['origin', 'carrier', 'arr_delay']]
+
+# origin 별 carrier 분류
+origin_carrier_map = delay_set.groupby('origin')['carrier'].unique()
+
+# 지연 시간 구간 분류
+def classify_delay(delay):
+    if delay < 10:
+        return '빠른 도착 및 정시 도착(10분 이내)'
+    elif 10 <= delay < 60:
+        return '10분~1시간 지연'
+    else:
+        return '1시간 이상 지연'
+
+delay_set['classify_delay'] = delay_set['arr_delay'].apply(classify_delay)
+
+# origin + carrier에 따른 classify_delay 수 count
+grouped = delay_set.groupby(['origin', 'carrier', 'classify_delay']).size().reset_index(name='count')
+
+# pivot_table
+pivot_table = grouped.pivot_table(index=['origin', 'carrier'],
+                            columns='classify_delay',
+                            values='count',
+                            fill_value=0)
+
+# pivot_percent_round
+pivot_percent = pivot_table.div(pivot_table.sum(axis=1), axis=0) * 100
+pivot_percent_round = pivot_percent.round(2)
+pivot_percent_round
+```
+:::
+
+## 공항별 정시도착률
+
+::::: columns
+::: {.column width="40%"}
+-   공항별 차이가
+
+    크지 않음.
+
+-   공항에 따른 지연률의
+
+    상관관계가
+
+    적음을 알수 있음
+:::
+
+::: {.column width="60%"}
+```{python}
+# 그룹핑 후 비율 테이블 생성
+grouped = delay_set.groupby(['origin', 'carrier', 'classify_delay']).size().reset_index(name='count')
+pivot_table = grouped.pivot_table(index=['origin', 'carrier'], columns='classify_delay', values='count', fill_value=0)
+pivot_percent = pivot_table.div(pivot_table.sum(axis=1), axis=0) * 100
+pivot = pivot_percent.reset_index().copy()
+
+# 새로운 구간 컬럼으로 병합 및 이름 변경
+pivot['빠른 도착 및 정시 도착(10분 이내)'] = pivot['빠른 도착 및 정시 도착(10분 이내)']
+pivot['10~1시간 도착 지연'] = pivot['10분~1시간 지연']
+pivot['1시간 이상 도착 지연'] = pivot['1시간 이상 지연']
+pivot['label'] = pivot['carrier']
+
+plot_df = pivot[['origin', 'carrier', 'label', 
+                 '빠른 도착 및 정시 도착(10분 이내)', 
+                 '10~1시간 도착 지연', 
+                 '1시간 이상 도착 지연']]
+
+
+#################공항별 항공사 정시도착률
+
+# 피벗 테이블 생성 (항공사 x 공항)
+heatmap_data = plot_df.pivot(index='carrier', columns='origin', values='빠른 도착 및 정시 도착(10분 이내)')
+
+# 히트맵 시각화
+plt.figure(figsize=(8, 6))
+sns.heatmap(heatmap_data, 
+            annot=True, fmt=".1f", cmap="YlGnBu", linewidths=0.5, linecolor='gray',
+            cbar_kws={'label': '정시 도착 비율 (%)'},
+            )
+
+# 제목 및 축 라벨
+plt.title('공항별 항공사의 빠른/정시 도착률', fontsize=14)
+plt.xlabel('출발 공항', fontsize=12)
+plt.ylabel('항공사', fontsize=12)
+plt.tight_layout()
+plt.show()
+
+```
+:::
+:::::
+
+## 항공사별 도착지연률
+
+```{python}
+
+######################항공사별 도착 지연 구간 비율
+
+# 색상 설정
+colors = {
+    '빠른 도착 및 정시 도착(10분 이내)': '#80b1d3',
+    '10~1시간 도착 지연': '#fdb462',
+    '1시간 이상 도착 지연': '#fb8072'}
+
+# 막대그래프 함수 정의
+def plot_stacked_bar(data, origin=None, title=''):
+    if origin:
+        data = data[data['origin'] == origin]
+    else:
+        data = data.groupby('carrier')[
+            ['빠른 도착 및 정시 도착(10분 이내)', '10~1시간 도착 지연', '1시간 이상 도착 지연']
+        ].mean().reset_index()
+        data['label'] = data['carrier']
+    data = data.sort_values(by='빠른 도착 및 정시 도착(10분 이내)', ascending=True)
+    labels = data['label']
+    bar_height = 0.6
+    bar_positions = np.arange(len(labels))
+    left = np.zeros(len(data))
+    fig, ax = plt.subplots(figsize=(10, 6))
+    for col in ['빠른 도착 및 정시 도착(10분 이내)', '10~1시간 도착 지연', '1시간 이상 도착 지연']:
+        values = data[col]
+        ax.barh(bar_positions, values, label=col, color=colors[col], left=left, height=bar_height, edgecolor='black', linewidth=1)
+        for i, (v, lft) in enumerate(zip(values, left)):
+            if v > 0:
+                ax.text(lft + v / 2, i, f'{v:.1f}%', ha='center', va='center',
+                        fontsize=9, backgroundcolor='white', fontweight='bold')
+        left += values
+    ax.set_yticks(bar_positions)
+    ax.set_yticklabels(labels)
+    ax.set_xlim(0, 100)
+    ax.set_xlabel('비율 (%)', fontsize=12)
+    ax.set_ylabel('항공사', fontsize=12)
+    ax.set_title(title, loc='left')
+    ax.legend(loc='upper right', bbox_to_anchor=(1, 1.2), ncol=1, frameon=True, edgecolor='lightgray')
+    ax.tick_params(axis='x', labelsize=14)
+    ax.tick_params(axis='y', labelsize=14)
+    highlight_labels = ['AA', 'B6', 'DL', 'UA', 'US']
+    for label in ax.get_yticklabels():
+        if label.get_text() in highlight_labels:
+            label.set_bbox(dict(facecolor='yellow', edgecolor='none', boxstyle='round,pad=0.3'))
+    ax.grid(True, axis='x', linestyle='--', alpha=0.6)
+    plt.tight_layout()
+    plt.show()
+
+# 각 그래프 출력
+# plot_stacked_bar(plot_df, origin='EWR', title='그래프1: EWR 공항 조건')
+# plot_stacked_bar(plot_df, origin='JFK', title='그래프2: JFK 공항 조건')
+# plot_stacked_bar(plot_df, origin='LGA', title='그래프3: LGA 공항 조건')
+plot_stacked_bar(plot_df, origin=None, title='항공사별 도착 지연 구간 비율')
+
+```
+
+-   지연률이 가장 낮은 항공사는 HA(하와이안 항공)
+
+## (3) 결항률 {.smaller}
+
+::: {style="font-size: 30px"}
+```{python}
+# 결항 여부 판단
+df_filtered1['cancelled'] = df_filtered1['dep_time'].isna() & df_filtered1['arr_time'].isna()
+
+# 공항 & 항공사 모든 조합 만들기
+origins = df_filtered1['origin'].unique()
+carriers = airlines_filter
+full_index = pd.MultiIndex.from_product([origins, carriers], names=['origin', 'carrier'])
+
+# 결항 횟수와 총 운항 횟수 계산
+cancel_counts = df_filtered1[df_filtered1['cancelled']].groupby(['origin', 'carrier']).size()
+total_counts = df_filtered1.groupby(['origin', 'carrier']).size()
+
+# 결항률 테이블 생성
+cancel_data = pd.DataFrame(index=full_index)
+cancel_data['cancelled'] = cancel_counts
+cancel_data['total'] = total_counts
+
+# NaN → 0으로 바꾸고 결항률 계산, 운항 수가 0인 경우는 NaN 처리
+cancel_data = cancel_data.fillna({'cancelled': 0, 'total': 0})
+cancel_data['cancel_rate'] = np.where(
+    cancel_data['total'] == 0,
+    np.nan,
+    (cancel_data['cancelled'] / cancel_data['total']) * 100
+)
+
+# 피벗 테이블로 변환
+cancel_pivot_table = cancel_data.reset_index().pivot(
+    index='origin',
+    columns='carrier',
+    values='cancel_rate'
+)
+# cancel_pivot_table = cancel_pivot_table.round(2)
+cancel_pivot_table.columns.name = None
+cancel_pivot_table1 = cancel_pivot_table.reset_index()
+# 결항률 반올림해서 소수점 2자리
+cancel_pivot_table1 = cancel_pivot_table1.round(2)
+
+cancel_pivot_table1
+```
+:::
+
+## 항공사별 평균 결항률
+
+```{python}
+# 항공사별 평균 결항률 계산 (NaN 제외)
+carrier_mean_cancel = cancel_pivot_table.mean(axis=0)
+
+# 내림차순 정렬
+carrier_mean_cancel = carrier_mean_cancel.sort_values(ascending=False)
+
+# 가장 높은 항공사 찾기
+top_carrier = carrier_mean_cancel.idxmax()
+
+# 색깔 리스트 만들기: 최고 결항률 'red', 2% 이상 'orange', 1% ~ 2% 'yellow', 1% 미만 'blue'
+# 색상 지정 함수
+def assign_color(carrier, value):
+    if carrier == top_carrier:
+        return '#fb8072'
+    elif value >= 2:
+        return '#fdb462'
+    elif value >= 1:
+        return '#ffffb3'
+    else:
+        return '#80b1d3'
+
+# 색상 리스트 생성
+colors = [assign_color(carrier, value) for carrier, value in carrier_mean_cancel.items()]
+
+# 그래프 그리기
+plt.figure(figsize=(10, 6))
+bars = plt.bar(carrier_mean_cancel.index, carrier_mean_cancel.values, color=colors)
+
+# 막대 위에 결항률 값 표시
+for bar in bars:
+    height = bar.get_height()
+    plt.text(bar.get_x() + bar.get_width()/2, height + 0.05, f'{height:.2f}%', 
+             ha='center', va='bottom', fontsize=10)
+    
+# 범례 패치 생성
+import matplotlib.patches as mpatches
+legend_patches = [
+    mpatches.Patch(color='#fb8072', label='최고 결항률'),
+    mpatches.Patch(color='#fdb462', label='2% 이상'),
+    mpatches.Patch(color='#ffffb3', label='1% 이상 2% 미만'),
+    mpatches.Patch(color='#80b1d3', label='1% 미만')
+]
+
+# 범례 추가 (오른쪽 위)
+plt.legend(handles=legend_patches, title='결항률 범위', loc='upper right')
+
+# 제목 및 축 라벨 (한글)
+plt.title('항공사별 평균 결항률')
+plt.xlabel('항공사')
+plt.ylabel('평균 결항률 (%)')
+
+plt.grid(axis='y', linestyle='--', alpha=0.3)
+plt.tight_layout()
+plt.show()
+```
+
+-   결항률이 가장 높은 항공사 OO(스카이 웨스트)
+
+## 분석2: 투자 Risk-노후화 항공기
+
+-   제조된 지 20년 이상된 항공기는 '노후화' 된 것으로 규정
+
+    -   통상적으로, 안전성·정비비용·규제 목적으로 20년 이상을
+
+        노후 항공기로 간주함
+
+## 항공사별 노후화 항공기 운행률 {.smaller}
+
+```{python}
+# loc와 isin을 사용한 필터링
+df_filtered = df_flights.loc[df_flights['carrier'].isin(airlines_filter)]
+# tailnum를 기준으로 병합
+merged1 = pd.merge( df_filtered, df_planes, on='tailnum', how="left")
+# 제조년도에 따른 구분을 위한 함수 설정
+def classify(year):
+    if pd.isna(year): return '년도 미상'
+    elif year > 1993: return '1993년 이후 제조'
+    else: return '1993년 이전 제조'
+# 제조년도 분류 함수를 적용한 후 원 데이터에 추가
+merged1['class'] = merged1['year_y'].apply(classify)
+# 데이터 그룹화
+result = merged1.groupby(['carrier','tailnum','class']
+                         ).size().reset_index(name='flight_count')
+# 데이터 longterm으로 변환
+pivot_result1 = result.pivot_table(index='carrier', columns='class',
+                            values='flight_count', aggfunc='sum'# 중복시 합계
+                            ).fillna(0).astype(int)
+total = pivot_result1["1993년 이전 제조"]+pivot_result1["1993년 이후 제조"]+pivot_result1["년도 미상"]
+# 백분율 변환
+pivot_result1['1993년 이후%'] = pivot_result1["1993년 이후 제조"]*100/total
+pivot_result1['1993년 이전%'] = pivot_result1["1993년 이전 제조"]*100/total
+pivot_result1['년도 미상%'] = pivot_result1["년도 미상"]*100/total
+pivot_result1 = pivot_result1.round(2)
+pivot_result1.index.name = '항공사'
+pivot_result1.columns.name = None
+pivot_result1 = pivot_result1.reset_index()
+from IPython.display import HTML
+# 데이터프레임을 HTML로 변환
+html_table = pivot_result1.to_html(index=False)
+# CSS로 테이블 헤더 스타일 변경 (폰트 크기 줄이고 줄바꿈 방지)
+style = """
+<style>
+table th {
+    font-size: 80%;      /* ✅ 열 제목 폰트 크기 줄이기 */
+    white-space: nowrap; /* ✅ 줄바꿈 방지 */
+}
+</style>
+"""
+# CSS + 테이블 합쳐서 출력
+HTML(style + html_table)
+```
+
+## 항공사별 노후화 항공기 운행률
+
+```{python}
+pivot_result1 = result.pivot_table(index='carrier', columns='class',
+                            values='flight_count', aggfunc='sum'# 중복시 합계
+                            ).fillna(0).astype(int)
+total = pivot_result1["1993년 이전 제조"]+pivot_result1["1993년 이후 제조"]+pivot_result1["년도 미상"]
+# 백분율 변환
+pivot_result1['1993년 이후%'] = pivot_result1["1993년 이후 제조"]*100/total
+pivot_result1['1993년 이전%'] = pivot_result1["1993년 이전 제조"]*100/total
+pivot_result1['년도 미상%'] = pivot_result1["년도 미상"]*100/total
+pivot_result1 = pivot_result1.round(2)
+pivot_result1.index.name = '항공사'                            
+
+plot_data = pivot_result1[['1993년 이후%', '년도 미상%', '1993년 이전%']]
+
+plot_data = plot_data.sort_values(by='1993년 이후%', ascending=True)
+
+# 색상
+colors = ['#66b3ff', '#b3b3b3', '#ff9999'] 
+
+# 그래프
+fig, ax = plt.subplots(figsize=(10, 6))
+plot_data[['1993년 이후%', '년도 미상%', '1993년 이전%']].plot(
+    kind='barh',
+    stacked=True,
+    color=colors,
+    ax=ax,
+    edgecolor='black'
+)
+
+# 화살표 조건
+threshold = 5
+arrow_offset = 2  # 화살표 짧게
+max_x = 108
+ax.set_xlim(0, max_x)
+
+for i, (idx, row) in enumerate(plot_data.iterrows()):
+    cum = 0
+    for j, value in enumerate(row):
+        value = float(value)
+        label = f'{value:.1f}%'
+        mid = cum + value / 2
+
+        if idx in ['AS', 'B6', 'WN', 'US', 'UA', 'DL', 'AA']:
+            if j == 0 and value < threshold:  # after% 오른쪽 화살표
+                text_pos = min(cum + value + arrow_offset, max_x)
+                ax.annotate(label,
+                            xy=(cum + value, i),
+                            xytext=(text_pos, i),
+                            textcoords='data',
+                            arrowprops=dict(arrowstyle="->", color='black', lw=1),
+                            ha='left', va='center', fontsize=9)
+            elif j == 1 and value < threshold:  # unknown -> 왼쪽
+                text_pos = max(cum - arrow_offset, 0)
+                ax.annotate(label,
+                            xy=(cum, i),
+                            xytext=(text_pos, i),
+                            textcoords='data',
+                            arrowprops=dict(arrowstyle="->", color='black', lw=1),
+                            ha='right', va='center', fontsize=9)
+            elif j == 2 and value < threshold:  # before -> 오른쪽
+                text_pos = min(cum + value + arrow_offset, max_x)
+                ax.annotate(label,
+                            xy=(cum + value, i),
+                            xytext=(text_pos, i),
+                            textcoords='data',
+                            arrowprops=dict(arrowstyle="->", color='black', lw=1),
+                            ha='left', va='center', fontsize=9)
+            elif value >= threshold:
+                ax.text(mid, i, label, ha='center', va='center', fontsize=9, color='black')
+        else:
+            if value >= threshold:
+                ax.text(mid, i, label, ha='center', va='center', fontsize=9, color='black')
+            else:
+                text_pos = min(cum + value + arrow_offset, max_x)
+                ax.annotate(label,
+                            xy=(cum + value, i),
+                            xytext=(text_pos, i),
+                            textcoords='data',
+                            arrowprops=dict(arrowstyle="->", color='black', lw=1),
+                            ha='left', va='center', fontsize=9)
+
+        cum += value
+# 축 및 제목
+ax.set_xlabel('비율 (%)', fontsize=12)
+ax.set_ylabel('항공사 (carrier)', fontsize=12)
+ax.set_title('항공사별 1993년 기준 기체 운항 비율', fontsize=14)
+ax.grid(axis='x', linestyle='--', alpha=0.6)
+
+# 범례 바깥으로
+ax.legend(
+    ['1993년 이후', '제조년도 미상', '1993년 이전'],
+    loc='upper left',
+    bbox_to_anchor=(1.01, 1),
+    borderaxespad=0.,
+    fontsize=10,
+    title='제조년도'
+)
+
+plt.tight_layout()
+plt.show()
+
+```
+
+-   OO항공사(스카이웨스트) 신형항공기 운행률 가장 높음
+
+------------------------------------------------------------------------
+
+## 분석3: 항공사별 항공기 활용률
+
+-   항공사의 운영효율성 측정을 위해 각 항공기별 하루평균 운항시간을 검토
+-   항공기 활용률 및 가동률이 높을수록 고정비 대비 운항수익 증가
+-   동일자산 대비 매출효율(ROA) 증가로, 하루평균 운항시간이 높을 수록 고효율
+
+## 각 항공기별 하루평균 운항시간 {.smaller}
+
+```{python}
+# loc와 isin을 사용한 필터링
+df_filtered =df_flights.loc[df_flights['carrier'].isin(airlines_filter)]
+df_filtered['date'] = pd.to_datetime(df_filtered[['year', 'month', 'day']])
+df_filtered['date']
+
+#결측치 제거
+df_filtered = df_filtered.dropna()
+
+#항공사별로 각 기체의 일일 총 운항시간 합산 데이터
+day_airtime = df_filtered.groupby(["carrier", "tailnum", "date"])['air_time'].sum().reset_index()
+day_airtime = pd.DataFrame(day_airtime)
+
+#항공사별로 각 기체의 총 운항일수 정보
+total_flights = df_filtered.groupby(["carrier", "tailnum"])['date'].nunique().reset_index()
+
+#각 항공사별로 
+total_airtime = df_filtered.groupby(['carrier', 'tailnum'])['air_time'].sum().reset_index()
+
+
+##데이터 프레임 병합
+df_final = pd.merge(total_airtime, total_flights,
+         on= ['carrier', 'tailnum'],
+         how= 'left')
+
+###운항률 정보 도출 -> 항공사별로 평균 운항률
+df_final['avg_airtime'] = (df_final['air_time']/60) / df_final['date']
+df_final = df_final.groupby('carrier')['avg_airtime'].mean().reset_index()
+
+#정렬
+dff = df_final.sort_values(by= 'avg_airtime',ascending=False).reset_index()
+del dff['index']
+dff2 = dff.rename(columns= {'carrier': '항공사', 'avg_airtime': '활용률'})
+dff2
+```
+
+-   가장 운항 효율성이 높은 항공사는 HA(하와이안 항공사)
+
+## 13년 대비 15년 지표 비교
+
+-   2013년 분석결과와 2015년 시가 총액을 기준으로 실제 데이터 지표를 비교하여, 항공사별 성장률 및 예측 신뢰성 검증
+
+-   최적투자항공사 선정
+
+    위에서 도출한 지표들 & 재무 정보 데이터 -\> 10점 만점의 스코어화
+
+    각 항공사별 평균 스코어 바탕으로 성장 잠재력 순위 도출
+
+## 데이터 프레임 {.smaller}
+
+::: {style="font-size: 22px"}
+```{python}
+dep_delay = pd.read_csv('dep_delay_total.csv')
+arr_delay = pd.read_csv('arr_delay_total.csv')
+cancel = pd.read_csv('cancel_total.csv')
+operation = pd.read_csv('operation.csv')
+fundamental = pd.read_csv('fundamental.csv')
+after = pd.read_csv('after1993_a.csv')
+##인덱스 정렬
+dep_delay = dep_delay.sort_values(by= 'carrier', ascending=True)
+arr_delay = arr_delay.sort_values(by= 'carrier', ascending=True)
+cancel = cancel.sort_values(by= 'carrier', ascending=True)
+
+# 결항률 -> 정상 운행률
+cancel['not_cancel'] = 100 - cancel['total_cancel']
+not_cancel = cancel.loc[:,['carrier', 'not_cancel']]
+
+# 인덱스 정리
+dep_ontime = dep_delay.loc[:,['carrier', 'total_on']]
+score = dep_ontime
+score = score.reset_index()
+del score['index']
+score = score.rename(columns={'total_on': 'dep_on'})
+
+arr_ontime = arr_delay.loc[:,['carrier', 'total_on']]
+arr_ontime = arr_ontime.rename(columns={'total_on': 'arr_on'})
+arr_ontime = arr_ontime.reset_index()
+del arr_ontime['index']
+
+##데이터 프레임 병합
+score['arr_on'] = arr_ontime['arr_on']
+score['dep_on'] = score['dep_on'].round(2)
+score['not_cancel'] = not_cancel['not_cancel']
+score['after1993'] = after['after1993']
+score['operation_rate'] = operation['avg_airtime']
+score['rev_growth'] = fundamental['rev_growth']
+score['OI_cagr'] = fundamental['OI_cagr']
+score['stability'] = 1 / fundamental['debt_ratio'] 
+#부채비율 -> +영향
+
+
+# ✅ score3 생성 (score 복사)
+score3 = score.copy()
+
+# ✅ 숫자형 컬럼만 소숫점 둘째 자리까지 반올림
+num_cols = score3.select_dtypes(include=['float64', 'int64']).columns
+score3[num_cols] = score3[num_cols].round(2)
+
+# ✅ 컬럼 이름 변경
+score3 = score3.rename(columns={
+    'carrier': '항공사',
+    'dep_on': '정시출발',
+    'arr_on': '정시도착',
+    'not_cancel': '비결항',
+    'after1993': '신형보유',
+    'operation_rate': '활용률',
+    'rev_growth': '매출성장',
+    'OI_cagr': '이익성장',
+    'stability': '안정성'
+})
+
+# ✅ 결과 확인
+from IPython.display import HTML
+
+# 데이터프레임을 HTML로 변환
+html_table = score3.to_html(index=False)
+
+# CSS로 테이블 헤더 스타일 변경 (폰트 크기 줄이고 줄바꿈 방지)
+style = """
+<style>
+table th {
+    font-size: 80%;      /* ✅ 열 제목 폰트 크기 줄이기 */
+    white-space: nowrap; /* ✅ 줄바꿈 방지 */
+}
+</style>
+"""
+
+# CSS + 테이블 합쳐서 출력
+HTML(style + html_table)
+```
+:::
+
+## 스케일링 및 총합 스코어 도출 {.smaller}
+
+```{python}
+#| echo: false
+#| eval: true
+###스케일링
+from sklearn.preprocessing import QuantileTransformer
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
+
+score_scaled2 = score.copy()
+
+score_scaled2
+
+score_scaled2['dep_on'] = score_scaled2['dep_on'] / 10 
+score_scaled2['arr_on'] = score_scaled2['arr_on'] / 10 
+score_scaled2['after1993'] = score_scaled2['after1993'] / 10 
+score_scaled2['operation_rate'] = score_scaled2['operation_rate']* (10/10.39)
+#### 결항률, 성장성, 수익성, 안정성 지표 Min-Max 스케일링
+mm_scaler = MinMaxScaler(feature_range=(0, 10))
+score_scaled2['not_cancel'] = mm_scaler.fit_transform(score_scaled2[['not_cancel']])
+score_scaled2['rev_growth'] = mm_scaler.fit_transform(score_scaled2[['rev_growth']])
+score_scaled2['OI_cagr'] = mm_scaler.fit_transform(score_scaled2[['OI_cagr']])
+score_scaled2['stability'] = mm_scaler.fit_transform(score_scaled2[['stability']])
+
+## 총합 스코어 계산
+score_scaled2['total_score'] = score_scaled2.iloc[:, 1:].mean(axis=1)
+predict2 = score_scaled2.loc[:, ['carrier', 'total_score']]
+
+pre2 = predict2.sort_values(by= 'total_score', ascending=False)
+score_scaled2
+
+
+#####
+# ✅ 1. score_scaled3 생성 (원본 유지)
+score_scaled3 = score_scaled2.copy()
+
+# ✅ 2. 숫자형 컬럼만 소숫점 둘째 자리까지 반올림
+num_cols_scaled = score_scaled3.select_dtypes(include=['float64', 'int64']).columns
+score_scaled3[num_cols_scaled] = score_scaled3[num_cols_scaled].round(2)
+
+# ✅ 3. 컬럼 이름 변경 (한글화)
+score_scaled3 = score_scaled3.rename(columns={
+    'carrier': '항공사',
+    'dep_on': '정시출발',
+    'arr_on': '정시도착',
+    'not_cancel': '비결항',
+    'after1993': '신형보유',
+    'operation_rate': '활용률',
+    'rev_growth': '매출성장',
+    'OI_cagr': '이익성장',
+    'stability': '안정성',
+    'total_score': '총점'
+})
+
+# ✅ 4. HTML 변환 및 CSS 스타일 지정
+html_table_scaled3 = score_scaled3.to_html(index=False)
+
+style_scaled3 = """
+<style>
+table th {
+    font-size: 80%;      /* ✅ 열 제목 폰트 크기 줄이기 */
+    white-space: nowrap; /* ✅ 자동 줄바꿈 방지 */
+}
+</style>
+"""
+
+# ✅ 5. HTML + CSS 합쳐서 출력
+HTML(style_scaled3 + html_table_scaled3)
+
+
+```
+
+-   0부터 10사이의 점수를 갖도록 스케일링한 스코어 도출
+-   총점은 각 항목의 스코어 평균으로 도출
+
+```{python}
+## 실제값과 비교
+#실제
+actual = fundamental.loc[:, ['carrier', 'mc_cagr']]
+act = actual.sort_values(by= 'mc_cagr', ascending=False)
+```
+
+------------------------------------------------------------------------
+
+##  {.smaller}
+
+::::: columns
+::: {.column width="50%"}
+### - 총합 스코어 순위 {style="font-size:90%;"}
+
+```{python}
+pre3 = pre2.reset_index()
+del pre3['index']
+pre3 = pre3.rename(columns = {'carrier': '항공사', 'total_score': '총점'})
+pre3
+```
+:::
+
+::: {.column width="50%"}
+### -실제 시총 성장률 순위 {style="font-size:90%;"}
+
+```{python}
+act2 = act.reset_index()
+del act2['index']
+act2 = act2.rename(columns= {'carrier': '항공사', 'mc_cagr': '시총성장'})
+act2
+```
+:::
+:::::
+
+## 항공사별 지표 비교
+
+::::: columns
+::: {.column width="50%"}
+```{python}
+import matplotlib.pyplot as plt
+from matplotlib.patches import Patch
+import matplotlib as mpl
+
+# 폰트 설정
+plt.rcParams['font.family'] = 'Malgun Gothic'
+
+# CSV 읽기
+df = pd.read_csv('score.csv')
+
+# 사용할 항목
+metrics = ['dep_on', 'arr_on', 'not_cancel', 'after1993', 'operation_rate']
+metric_labels = ['정시출발율', '정시도착율', '정상운항률', '신형항공기 비율', '운항효율성']
+
+# 등수 계산 함수 (공동 순위 인정 방식)
+rank_df = df.copy()
+for metric in metrics:
+    # after1993은 공동 1위 인정 (10점 모두 1등 처리)
+    if metric == 'after1993':
+        rank_df[metric + '_rank'] = rank_df[metric].rank(method='min', ascending=False)
+    else:
+        rank_df[metric + '_rank'] = rank_df[metric].rank(ascending=False)
+
+# 등수만 추출 (1~9등)
+rank_cols = [m + '_rank' for m in metrics]
+rank_df_ranked = rank_df[['carrier'] + rank_cols]
+
+# 정수로 변환
+rank_df_ranked[rank_cols] = rank_df_ranked[rank_cols].astype(int)
+
+# ✅ 등수 반전: 1등 → 9, 9등 → 1
+rank_df_ranked[rank_cols] = 10 - rank_df_ranked[rank_cols]
+
+# 비교 대상
+top3 = ['HA', 'AS', 'UA']
+bottom3 = ['AA', 'US', 'OO']
+
+def plot_radar(df_ranked, carriers, title, colors):
+    num_vars = len(metrics)
+    angles = np.linspace(0, 2 * np.pi, num_vars, endpoint=False).tolist()
+    angles += angles[:1]  # 원형 만들기 위해 첫 번째 추가
+
+    fig, ax = plt.subplots(figsize=(8, 8), subplot_kw=dict(polar=True))
+
+    # 축 방향 설정
+    ax.set_theta_offset(np.pi / 2)
+    ax.set_theta_direction(-1)
+
+    # 그리드 레벨 설정 (1등이 바깥, 9등이 중심)
+    levels = [9, 7, 5, 3, 1]
+    ax.set_rgrids(levels, labels=[f'{10 - lvl}등' for lvl in levels], angle=0)
+    
+    # 축 라벨
+    ax.set_thetagrids(np.degrees(angles[:-1]), metric_labels, fontsize = 18)
+
+    # 각 항공사별로 그래프 그리기
+    for i, carrier in enumerate(carriers):
+        row = df_ranked[df_ranked['carrier'] == carrier]
+        values = row[rank_cols].values.flatten().tolist()
+        values += values[:1]  # 원형 닫기
+        ax.plot(angles, values, label=carrier, color=colors[i])
+        ax.fill(angles, values, alpha=0.1, color=colors[i])
+
+        for j, val in enumerate(values[:-1]):  # 마지막 값은 복사된 거라 제외
+            angle = angles[j]
+            actual_rank = 10 - val  # 원래 등수로 복원
+            # ax.text(angle, val + 0.3, f'{actual_rank}등', fontsize=9, ha='center', va='center', color=colors[i])
+
+    # 범례 및 타이틀
+    handles = [Patch(color=colors[i], label=carrier) for i, carrier in enumerate(carriers)]
+    ax.legend(handles=handles, loc='upper right', bbox_to_anchor=(1.2, 1.1))
+    plt.title(title, size=16, pad=40)
+    plt.tight_layout()
+    plt.show()
+
+# 색상 설정
+top_colors = ['#FF6F61', '#6B5B95', '#88B04B']  # 예: 붉은색, 보라색, 연두
+bottom_colors = ['#009B77', '#DD4124', '#1E90FF']  # 예: 청록, 주황, 민트
+
+# 레이더 차트 그리기
+plot_radar(rank_df_ranked, top3, '상위 3개 항공사 비교 (등수 기반)', top_colors)
+
+```
+:::
+
+::: {.column width="50%"}
+```{python}
+plot_radar(rank_df_ranked, bottom3, '하위 3개 항공사 비교 (등수 기반)', bottom_colors)
+
+```
+:::
+:::::
+
+## 예측 결과 및 투자 선정
+
+-   투자 대상 선정 : 하와이안 Airlines(종합 1등)
+
+```{python}
+#################찐최종
+
+# 데이터 입력
+rank = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+carriers = ['HA', 'AS', 'UA', 'B6', 'WN', 'DL', 'AA', 'US', 'OO']
+predicted_scores = [8.2, 7.4, 6.5, 6.3, 6.2, 5.7, 5.5, 4.5, 3.7]
+actual_scores = [100.3, 93.9, 70.1, 45.4, 41.3, 29.9, 23.5, 13.7, 0]  # US doesn't have a value in 2015
+
+# 라벨 데이터
+labels_rank = list(map(str, range(1, 10)))
+labels_top = ['HA', 'AS', 'UA', 'B6', 'WN', 'DL', 'AA', 'US', 'OO']
+labels_bottom = ['AA', 'HA', 'B6', 'WN', 'AS', 'DL', 'UA', 'OO', 'US']
+
+# 보기 좋은 색상
+colors_by_airline = {
+    'HA': '#8dd3c7',
+    'AS': '#ffffb3',
+    'UA': '#bebada',
+    'B6': '#fb8072',
+    'WN': '#80b1d3',
+    'DL': '#fdb462',
+    'AA': '#b3de69',
+    'US': '#fccde5',
+    'OO': '#d9d9d9'
+}
+
+# 화살표 색상
+blue_arrows = {'B6', 'WN', 'US', 'OO', 'DL'}
+red_arrow = 'HA'
+
+segments = [100 / 9] * 9
+lefts = [i * (100 / 9) for i in range(9)]
+centers = [left + seg / 2 for left, seg in zip(lefts, segments)]
+
+fig, ax = plt.subplots(figsize=(10, 4.5))
+
+# ▶ Rank (y=3)
+for i, label in enumerate(labels_rank):
+    ax.barh(y=3, width=segments[i], left=lefts[i],
+            color='white', edgecolor='none')
+    ax.text(centers[i], 3, label,
+            ha='center', va='center', fontsize=15,
+            color='black', backgroundcolor='white', fontweight='bold')
+
+# ▶ 예측결과 (y=2)
+top_positions = {}
+for i, label in enumerate(labels_top):
+    edge_col = 'red' if label == 'HA' else 'black'
+    lw = 3 if label == 'HA' else 1  # HA 강조, AA는 기본
+    
+    font_size = 12 if label == 'HA' else 9
+
+    ax.barh(y=2, width=segments[i], left=lefts[i],
+            color=colors_by_airline[label], edgecolor=edge_col, linewidth=lw)
+    
+    ax.text(centers[i], 2, label,
+            ha='center', va='center', fontsize=font_size,
+            color='black', backgroundcolor='white', fontweight='bold')
+    
+    top_positions[label] = centers[i]
+
+# ▶ 실제 데이터 (y=0)
+bottom_positions = {}
+for i, label in enumerate(labels_bottom):
+    edge_col = 'red' if label == 'HA' else 'black'
+    lw = 3 if label == 'HA' else 1  # HA 강조, AA 기본
+    hatch_style = '//' if label == 'US' else ''
+
+    display_text = 'AAL\n(AA)' if label == 'AA' else label
+    font_size = 12 if label == 'HA' else 9  # HA 강조, AA 기본
+
+    ax.barh(y=0, width=segments[i], left=lefts[i],
+            color=colors_by_airline[label], edgecolor=edge_col,
+            hatch=hatch_style, linewidth=lw)
+    
+    ax.text(centers[i], 0, display_text,
+            ha='center', va='center', fontsize=font_size,
+            color='black', backgroundcolor='white', fontweight='bold')
+    
+    bottom_positions[label] = centers[i]
+
+# ▶ 화살표
+for airline in labels_top:
+    if airline in labels_bottom:
+        x_start = top_positions[airline]
+        x_end = bottom_positions[airline]
+
+        if airline == red_arrow:
+            arrow_color = 'red'
+            arrow_width = 2.5
+        elif airline in blue_arrows:
+            arrow_color = 'blue'
+            arrow_width = 2.5
+        else:
+            arrow_color = 'gray'
+            arrow_width = 1.5
+
+        ax.annotate("",
+                    xy=(x_end, 0.5),
+                    xytext=(x_start, 1.5),
+                    arrowprops=dict(arrowstyle="->", color=arrow_color, lw=arrow_width))
+
+# ▶ 시각 요소 제거
+ax.set_xticks([])
+ax.set_xlim(0, 100)
+ax.spines[['top', 'right', 'left', 'bottom']].set_visible(False)
+ax.tick_params(left=False, bottom=False)
+
+# 'HA'에 빨간색 체크 마커 추가 (v자 마커로 체크 느낌 연출)
+ha_x = top_positions['HA']
+ax.plot(ha_x, 2 + 0.4, marker='v', color='red', markersize=14)
+
+# ▶ 시가총액 성장률 (y = -1)
+# 각 항공사별 성장률 (%)
+growth_rate_map = {
+    'AA': '100.3%',
+    'HA': '93.9%',
+    'B6': '70.1%',
+    'WN': '45.4%',
+    'AS': '41.3%',
+    'DL': '29.9%',
+    'UA': '23.5%',
+    'OO': '13.7%',
+    'US': '(상장폐지)'
+    # 'US'는 없음
+}
+
+# 시가총액 성장률 막대 생성
+for i, label in enumerate(labels_bottom):
+    value = growth_rate_map.get(label, '')
+
+    ax.barh(y=-1, width=segments[i], left=lefts[i],
+            color='white', edgecolor='none', height=0.5)
+
+    ax.text(centers[i], -1, value,
+            ha='center', va='center', fontsize=13, color='black')
+
+# y축 라벨 설정 (라벨명과 폰트사이즈 조정)
+ax.set_yticks([3, 2, 0, -1])
+ax.set_yticklabels(['Rank', '예측 결과', '실제\n2015년\n데이터', '시가총액\n성장률'], fontsize=13)
+
+# 임의의 선형 객체를 그래프에 그려서 범례 구성 (화면에는 보이지 않지만 legend용)
+red_legend, = ax.plot([], [], color='red', linewidth=2.5, label='선정 종목')
+blue_legend, = ax.plot([], [], color='blue', linewidth=2.5, label='예측 근접')
+gray_legend, = ax.plot([], [], color='gray', linewidth=1.5, label='예측 이탈')
+
+# 범례 표시
+ax.legend(handles=[red_legend, blue_legend, gray_legend],
+          loc='lower center', bbox_to_anchor=(0.5, -0.2),
+          ncol=3, frameon=False, fontsize=11)
+
+plt.tight_layout()
+plt.show()
+
+```
+
+## 추가 분석
+
+-   nycflights13 데이터로 도출한 지표들과 실제 성장률간의 관련성
+
+```{python}
+#번외 + 상관계수 도출
+
+rank = [1,2,3,4,5,6,7,8,9]
+
+dep_rank = score_scaled2.loc[:, ['carrier', 'dep_on']]
+dep_rank = dep_rank.sort_values(by= 'dep_on', ascending=False)
+dep_rank['rank'] = rank
+
+arr_rank = score_scaled2.loc[:, ['carrier', 'arr_on']]
+arr_rank = arr_rank.sort_values(by= 'arr_on', ascending=False)
+arr_rank['rank'] = rank
+
+nc_rank = score_scaled2.loc[:, ['carrier', 'not_cancel']]
+nc_rank = nc_rank.sort_values(by= 'not_cancel', ascending=False)
+nc_rank['rank'] = rank
+
+op_rank = score_scaled2.loc[:, ['carrier', 'operation_rate']]
+op_rank = op_rank.sort_values(by= 'operation_rate', ascending=False)
+op_rank['rank'] = rank
+
+af_rank = score_scaled2.loc[:, ['carrier', 'after1993']]
+af_rank = af_rank.sort_values(by= 'after1993', ascending=False)
+af_rank['rank'] = rank
+
+act['rank'] = rank
+act
+
+### 실제 시가총액 성장률 순위와의 상관계수 도출
+from scipy.stats import spearmanr
+
+merged = act[['carrier', 'rank']].rename(columns={'rank': 'act_rank'}) \
+    .merge(arr_rank[['carrier', 'rank']].rename(columns={'rank': 'arr_rank'}), on='carrier') \
+    .merge(dep_rank[['carrier', 'rank']].rename(columns={'rank': 'dep_rank'}), on='carrier') \
+    .merge(nc_rank[['carrier', 'rank']].rename(columns={'rank': 'nc_rank'}), on='carrier') \
+    .merge(op_rank[['carrier', 'rank']].rename(columns={'rank': 'op_rank'}), on='carrier') \
+    .merge(af_rank[['carrier', 'rank']].rename(columns={'rank': 'af_rank'}), on='carrier')
+
+
+# 2️⃣ act_rank와 각각의 rank 간 Spearman 상관계수 계산
+rho_arr, pval_arr = spearmanr(merged['act_rank'], merged['arr_rank'])
+rho_dep, pval_dep = spearmanr(merged['act_rank'], merged['dep_rank'])
+rho_nc, pval_nc = spearmanr(merged['act_rank'], merged['nc_rank'])
+rho_op, pval_op = spearmanr(merged['act_rank'], merged['op_rank'])
+rho_af, pval_af = spearmanr(merged['act_rank'], merged['af_rank'])
+
+print(f"정시 출발 Spearman 상관 (act vs dep): ρ={rho_dep:.3f}")
+print(f"정시 도착 Spearman 상관 (act vs arr): ρ={rho_arr:.3f}")
+print(f"정상 운항 Spearman 상관 (act vs nc): ρ={rho_nc:.3f}")
+print(f"신형 항공기 보유 Spearman 상관 (act vs af): ρ={rho_af:.3f}")
+print(f"운항 효율 Spearman 상관 (act vs op): ρ={rho_op:.3f}")
+
+```
+
+-   연관성 무관: 출발 지연률, 도착 지연률, 노후 항공기 보유 비율
+
+-   연관성 있음: 결항률, 운항효율성
+
+------------------------------------------------------------------------
+
+## 부록
+
+-   출발/도착 지연률의 경우 결측치는 모두 제외
+
+-   결항률은 dep_time & arr_time 결측치만 사용
+
+-   노후화 항목에서 전체데이터 사용(결측치 미제외)
+
+-   운항활용률의 경우 결측치 모두 제외
+
+-   재무 정보 데이터: macrotrends, annual reports 참고
