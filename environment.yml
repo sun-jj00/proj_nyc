@@ -89,5 +89,5 @@ dependencies:
   - zlib=1.2.13=h8cc25b3_1
   - zstd=1.5.6=h8880b57_0
   - pip:
-    - nycflights13==0.0.3
-prefix: C:\Users\USER\.conda\envs\team3_data
+      - nycflights13==0.0.3
+prefix: C:\DS\Miniconda\envs\team3_data

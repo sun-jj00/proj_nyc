@@ -82,7 +82,7 @@ df_filtered1 = df_filtered
 
 ## (1) 출발지연률 {.smaller}
 
--   지연률 = 지연된 항공편 수/전체 항공편 수) \* 100
+-   지연률 = (지연된 항공편 수/전체 항공편 수) \* 100
 
 ::: {style="font-size: 14px"}
 ```{python}
@@ -743,8 +743,8 @@ plt.show()
 
 ## 분석3: 항공사별 항공기 활용률
 
--   항공사의 운영효율성 측정을 위해 각 항공기별 하루평균 운항시간을 검토
--   항공기 활용률 및 가동률이 높을수록 고정비 대비 운항수익 증가
+-   항공사의 운영 효율성 측정을 위해 각 항공기별 하루평균 운항시간을 검토
+-   항공기 활용률이 높을수록 고정비 대비 운항수익 증가
 -   동일자산 대비 매출효율(ROA) 증가로, 하루평균 운항시간이 높을 수록 고효율
 
 ## 각 항공기별 하루평균 운항시간 {.smaller}
@@ -782,16 +782,17 @@ df_final = df_final.groupby('carrier')['avg_airtime'].mean().reset_index()
 dff = df_final.sort_values(by= 'avg_airtime',ascending=False).reset_index()
 del dff['index']
 dff2 = dff.rename(columns= {'carrier': '항공사', 'avg_airtime': '활용률'})
+dff2['활용률'] = dff2['활용률'].round(2)
 dff2
 ```
 
--   가장 운항 효율성이 높은 항공사는 HA(하와이안 항공사)
+-   가장 운영 효율성이 높은 항공사는 HA(하와이안 항공사)
 
 ## 13년 대비 15년 지표 비교
 
--   2013년 분석결과와 2016년 시가 총액을 기준으로 실제 데이터 지표를 비교하여, 항공사별 성장률 및 예측 비교모델 신뢰성 검증
+-   2013년 분석결과와 2015년까지의 시가 총액을 기준으로 실제 데이터 지표를 비교하여, 항공사별 성장률 및 예측 신뢰성 검증
 
--   최적투자항공사 모델 선정
+-  투자할 최적 항공사 선정
 
     위에서 도출한 지표들 & 재무 정보 데이터 -\> 10점 만점의 스코어화
 
@@ -975,6 +976,7 @@ act = actual.sort_values(by= 'mc_cagr', ascending=False)
 pre3 = pre2.reset_index()
 del pre3['index']
 pre3 = pre3.rename(columns = {'carrier': '항공사', 'total_score': '총점'})
+pre3['총점'] = pre3['총점'].round(2)
 pre3
 ```
 :::
@@ -1252,7 +1254,7 @@ plt.show()
 
 ## 추가 분석
 
--   nycflights13 데이터로 도출한 지표들과 실제 성장률간의 관련성
+-   뉴욕공항 데이터로 도출한 지표들과 실제 성장률 간의 연관성
 
 ```{python}
 #번외 + 상관계수 도출
@@ -1304,13 +1306,13 @@ print(f"정시 출발 Spearman 상관 (act vs dep): ρ={rho_dep:.3f}")
 print(f"정시 도착 Spearman 상관 (act vs arr): ρ={rho_arr:.3f}")
 print(f"정상 운항 Spearman 상관 (act vs nc): ρ={rho_nc:.3f}")
 print(f"신형 항공기 보유 Spearman 상관 (act vs af): ρ={rho_af:.3f}")
-print(f"운항 효율 Spearman 상관 (act vs op): ρ={rho_op:.3f}")
+print(f"운영 효율 Spearman 상관 (act vs op): ρ={rho_op:.3f}")
 
 ```
 
 -   연관성 무관: 출발 지연률, 도착 지연률, 노후 항공기 보유 비율
 
--   연관성 있음: 결항률, 운항효율성
+-   연관성 있음: 결항률, 운영효율성
 
 ------------------------------------------------------------------------
 
